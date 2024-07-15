@@ -1,11 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox
-
+import time
 
 class VirtualPet:
     def __init__(self, name):
         self.name = name
-        self.age = 0
+        self.age = 0  # In pet days
         self.hunger = 50
         self.happiness = 50
 
@@ -23,26 +23,15 @@ class VirtualPet:
         if self.happiness > 100:
             self.happiness = 100
         self.hunger += 5
-        if self.hunger > 100:
+        if (self.hunger > 100):
             self.hunger = 100
         return f"You played with {self.name}."
 
     def show_status(self):
         return (f"{self.name}'s status:\n"
-                f"  Age: {self.age} days\n"
+                f"  Age: {self.age} pet days\n"
                 f"  Hunger: {self.hunger}\n"
                 f"  Happiness: {self.happiness}")
-
-    def age_pet(self):
-        self.age += 1
-        self.hunger += 5
-        if self.hunger > 100:
-            self.hunger = 100
-        self.happiness -= 5
-        if self.happiness < 0:
-            self.happiness = 0
-        return f"\nA day has passed. {self.name} is now {self.age} days old."
-
 
 class VirtualPetApp:
     def __init__(self, root):
@@ -50,7 +39,9 @@ class VirtualPetApp:
         self.root.title("Virtual Pet")
 
         self.pet = None
-        self.action_count = 0
+        self.start_time = None  # Real start time
+        self.real_seconds_elapsed = 0
+        self.pet_seconds_elapsed = 0  # Pet time in seconds
 
         self.create_widgets()
 
@@ -76,8 +67,14 @@ class VirtualPetApp:
         self.quit_button = tk.Button(self.root, text="Quit", command=self.root.quit, state=tk.DISABLED)
         self.quit_button.pack()
 
-        self.status_text = tk.Text(self.root, height=10, width=50)
+        self.status_text = tk.Text(self.root, height=15, width=80)
         self.status_text.pack()
+
+        self.real_time_label = tk.Label(self.root, text="Real Time: 0s")
+        self.real_time_label.pack()
+
+        self.pet_time_label = tk.Label(self.root, text="Pet Time: 0 pet days")
+        self.pet_time_label.pack()
 
     def start(self):
         name = self.name_entry.get()
@@ -86,6 +83,9 @@ class VirtualPetApp:
             return
 
         self.pet = VirtualPet(name)
+        self.start_time = time.time()  # Set the start time
+        self.real_seconds_elapsed = 0  # Initialize real time elapsed
+        self.pet_seconds_elapsed = 0  # Initialize pet time elapsed
         self.update_status(f"Welcome {self.pet.name}!")
 
         self.feed_button.config(state=tk.NORMAL)
@@ -94,19 +94,69 @@ class VirtualPetApp:
         self.quit_button.config(state=tk.NORMAL)
         self.start_button.config(state=tk.DISABLED)
 
+        self.update_times()
+        self.update_pet_time()
+
+    def update_times(self):
+        if self.pet:
+            # Real time elapsed since start
+            current_time = time.time()
+            real_time_elapsed = current_time - self.start_time
+            self.real_seconds_elapsed = int(real_time_elapsed)
+            self.real_time_label.config(text=f"Real Time: {self.format_real_time(self.real_seconds_elapsed)}")
+
+        # Schedule the update_times method to run again after 1000ms (1s)
+        self.root.after(1000, self.update_times)
+
+    def update_pet_time(self):
+        if self.pet:
+            # Update pet time independently
+            self.pet_seconds_elapsed += 3600/24  # Increment pet time by 1 pet hour (3600 pet seconds)
+            pet_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
+            old_age = self.pet.age
+            self.pet.age = int(pet_days_elapsed)  # Update pet age in pet days
+            if self.pet.age > old_age:
+                self.update_status(f"A new pet day has passed. {self.pet.name} is now {self.pet.age} pet days old.")
+
+            self.pet_time_label.config(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
+
+        # Schedule the update_pet_time method to run again after 1000ms (1s)
+        self.root.after(1000, self.update_pet_time)
+
+    def format_real_time(self, seconds):
+        minutes, seconds = divmod(seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
+        return f"{days}d {hours}h {minutes}m {seconds}s"
+
+    def format_pet_time(self, pet_seconds):
+        pet_hours, pet_seconds = divmod(pet_seconds, 3600)
+        pet_days, pet_hours = divmod(pet_hours, 24)
+        pet_minutes, pet_seconds = divmod(pet_seconds, 60)
+        return f"{int(pet_days)} pet days {int(pet_hours)}h {int(pet_minutes)}m {int(pet_seconds)}s"
+
     def feed(self):
         if not self.pet:
             return
         result = self.pet.feed()
         self.update_status(result)
-        self.increment_action_count()
+        self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def play(self):
         if not self.pet:
             return
         result = self.pet.play()
         self.update_status(result)
-        self.increment_action_count()
+        self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
+
+    def advance_pet_time(self, seconds):
+        self.pet_seconds_elapsed += seconds  # Advance pet time by given seconds
+        pet_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
+        old_age = self.pet.age
+        self.pet.age = int(pet_days_elapsed)  # Update pet age in pet days
+        if self.pet.age > old_age:
+            self.update_status(f"A new pet day has passed. {self.pet.name} is now {self.pet.age} pet days old.")
+        self.pet_time_label.config(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
 
     def show_status(self):
         if not self.pet:
@@ -117,14 +167,6 @@ class VirtualPetApp:
     def update_status(self, message):
         self.status_text.insert(tk.END, f"{message}\n")
         self.status_text.see(tk.END)
-
-    def increment_action_count(self):
-        self.action_count += 1
-        if self.action_count >= 4:
-            result = self.pet.age_pet()
-            self.update_status(result)
-            self.action_count = 0
-
 
 if __name__ == "__main__":
     root = tk.Tk()
