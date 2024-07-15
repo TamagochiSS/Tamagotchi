@@ -1,13 +1,17 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 import time
+import json # Lib for the JSON file format
+import os # Library to help with the save utilily
+
+SAVE_FILE = "pets_data.json"
 
 class VirtualPet:
-    def __init__(self, name):
+    def __init__(self, name, age=0, hunger=50, happiness=50):
         self.name = name
-        self.age = 0  # In pet days
-        self.hunger = 50
-        self.happiness = 50
+        self.age = age  # In pet days
+        self.hunger = hunger
+        self.happiness = happiness
 
     def feed(self):
         if self.hunger > 0:
@@ -23,7 +27,7 @@ class VirtualPet:
         if self.happiness > 100:
             self.happiness = 100
         self.hunger += 5
-        if (self.hunger > 100):
+        if self.hunger > 100:
             self.hunger = 100
         return f"You played with {self.name}."
 
@@ -32,6 +36,21 @@ class VirtualPet:
                 f"  Age: {self.age} pet days\n"
                 f"  Hunger: {self.hunger}\n"
                 f"  Happiness: {self.happiness}")
+
+    def to_dict(self, real_time_elapsed, pet_time_elapsed):
+        return {
+            'name': self.name,
+            'age': self.age,
+            'hunger': self.hunger,
+            'happiness': self.happiness,
+            'real_time_elapsed': real_time_elapsed,
+            'pet_time_elapsed': pet_time_elapsed
+        }
+
+    @staticmethod
+    def from_dict(data):
+        return VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'])
+
 
 class VirtualPetApp:
     def __init__(self, root):
@@ -45,6 +64,9 @@ class VirtualPetApp:
 
         self.create_widgets()
 
+        # Check for saved pet data
+        self.load_pet_prompt()
+
     def create_widgets(self):
         self.name_label = tk.Label(self.root, text="Enter pet's name:")
         self.name_label.pack()
@@ -54,6 +76,12 @@ class VirtualPetApp:
 
         self.start_button = tk.Button(self.root, text="Start", command=self.start)
         self.start_button.pack()
+
+        self.load_button = tk.Button(self.root, text="Load", command=self.load_pet_prompt, state=tk.NORMAL)
+        self.load_button.pack()
+
+        self.save_button = tk.Button(self.root, text="Save", command=self.save_pet, state=tk.DISABLED)
+        self.save_button.pack()
 
         self.feed_button = tk.Button(self.root, text="Feed", command=self.feed, state=tk.DISABLED)
         self.feed_button.pack()
@@ -88,14 +116,79 @@ class VirtualPetApp:
         self.pet_seconds_elapsed = 0  # Initialize pet time elapsed
         self.update_status(f"Welcome {self.pet.name}!")
 
+        self.save_button.config(state=tk.NORMAL)
         self.feed_button.config(state=tk.NORMAL)
         self.play_button.config(state=tk.NORMAL)
         self.status_button.config(state=tk.NORMAL)
         self.quit_button.config(state=tk.NORMAL)
         self.start_button.config(state=tk.DISABLED)
+        self.load_button.config(state=tk.DISABLED)
+        self.name_entry.config(state=tk.DISABLED)
 
         self.update_times()
         self.update_pet_time()
+
+    def load_pet_prompt(self): #Definition used for loading prompt when game starts
+        if os.path.exists(SAVE_FILE):
+            with open(SAVE_FILE, "r") as file: # Read mode
+                pets_data = json.load(file)
+            pet_names = list(pets_data.keys())
+            if pet_names:
+                pet_name = simpledialog.askstring("Load Pet", "Enter the name of the pet to load:", initialvalue=pet_names[0])
+                if pet_name and pet_name in pet_names:
+                    self.load_pet(pet_name)
+                else:
+                    messagebox.showerror("Error", "Pet not found.")
+            else:
+                messagebox.showinfo("Info", "No saved pets available.")
+
+    def load_pet(self, pet_name): #Logic for loading old pet.
+        try:
+            with open(SAVE_FILE, "r") as file: #reads saved file
+                pets_data = json.load(file)
+                if pet_name in pets_data:
+                    pet_data = pets_data[pet_name]
+                    self.pet = VirtualPet.from_dict(pet_data)
+                    self.real_seconds_elapsed = pet_data['real_time_elapsed']
+                    self.pet_seconds_elapsed = pet_data['pet_time_elapsed']
+                    self.start_time = time.time() - self.real_seconds_elapsed
+
+                    self.update_status(f"Welcome back {self.pet.name}!") # Welcome message
+
+                    self.save_button.config(state=tk.NORMAL)
+                    self.feed_button.config(state=tk.NORMAL)
+                    self.play_button.config(state=tk.NORMAL)
+                    self.status_button.config(state=tk.NORMAL)
+                    self.quit_button.config(state=tk.NORMAL)
+                    self.start_button.config(state=tk.DISABLED)
+                    self.load_button.config(state=tk.DISABLED)
+                    self.name_entry.config(state=tk.DISABLED)
+
+                    self.update_times()
+                    self.update_pet_time()
+                else:
+                    messagebox.showerror("Error", "Pet not found in the save file.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load pet: {e}")
+
+    def save_pet(self): #Definition used to save current playing pet
+        if not self.pet:
+            return
+        try:
+            if os.path.exists(SAVE_FILE):
+                with open(SAVE_FILE, "r") as file:
+                    pets_data = json.load(file)
+            else:
+                pets_data = {}
+
+            pets_data[self.pet.name] = self.pet.to_dict(self.real_seconds_elapsed, self.pet_seconds_elapsed)
+
+            with open(SAVE_FILE, "w") as file: # Sets Write mode
+                json.dump(pets_data, file, indent=4)
+
+            self.update_status(f"{self.pet.name}'s data has been saved.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save pet: {e}")
 
     def update_times(self):
         if self.pet:
@@ -120,7 +213,7 @@ class VirtualPetApp:
 
             self.pet_time_label.config(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
 
-        # Schedule the update_pet_time method to run again after 1000ms (1s)
+        # Schedule the update_pet_time method to run again after 1s
         self.root.after(1000, self.update_pet_time)
 
     def format_real_time(self, seconds):
@@ -152,7 +245,7 @@ class VirtualPetApp:
     def advance_pet_time(self, seconds):
         self.pet_seconds_elapsed += seconds  # Advance pet time by given seconds
         pet_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
-        old_age = self.pet.age
+        old_age = self.pet.age  
         self.pet.age = int(pet_days_elapsed)  # Update pet age in pet days
         if self.pet.age > old_age:
             self.update_status(f"A new pet day has passed. {self.pet.name} is now {self.pet.age} pet days old.")
