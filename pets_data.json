@@ -14,5 +14,13 @@
         "happiness": 100,
         "real_time_elapsed": 102,
         "pet_time_elapsed": 94650.0
+    },
+    "Polly": {
+        "name": "Polly",
+        "age": 0,
+        "hunger": 40,
+        "happiness": 50,
+        "real_time_elapsed": 5,
+        "pet_time_elapsed": 8100.0
     }
 }
