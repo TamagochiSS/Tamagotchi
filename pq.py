@@ -1,3 +1,10 @@
+## edit 16.07.2024
+## updated with the use of the GUI PyQt6 library
+## here there a picture of a happy cat pops up when we feed the pet (happy_cat.png)
+## a picture of a jumping cat pops up when we play with the pet (jumping_cat.png)
+## those two picures to be saved in the same directory as the code file
+## via terminal: pip install PyQt6
+
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QLineEdit, QMessageBox
 from PyQt6.QtGui import QPixmap
