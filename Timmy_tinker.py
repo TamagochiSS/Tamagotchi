@@ -153,17 +153,20 @@ class VirtualPetApp:
         self.feed_button = tk.Button(self.root, text="Feed", command=self.feed, state=tk.DISABLED)
         self.feed_button.pack()
 
-        # self.play_button = tk.Button(self.root, text="Play", command=self.play, state=tk.DISABLED)
-        # self.play_button.pack()
+        self.play_button = tk.Button(self.root, text="Play", command=lambda: [self.play_catch_button.pack(), self.play_puzzle_button.pack(), self.play_dance_button.pack()], state=tk.DISABLED)
+        self.play_button.pack()
 
         self.play_catch_button = tk.Button(self.root, text="Play Catch", command=lambda: self.play("catch"), state=tk.DISABLED)
-        self.play_catch_button.pack()
+        # self.play_catch_button.pack()
+
+        # self.play_puzzle_button = tk.Button(self.root, text="Play Puzzle", command=lambda: [self.play("puzzle"), self.sleep_button.pack_forget()], state=tk.DISABLED)
+        # self.play_puzzle_button.pack()
 
         self.play_puzzle_button = tk.Button(self.root, text="Play Puzzle", command=lambda: self.play("puzzle"), state=tk.DISABLED)
-        self.play_puzzle_button.pack()
+        # self.play_puzzle_button.pack()
 
         self.play_dance_button = tk.Button(self.root, text="Play Dance", command=lambda: self.play("dance"), state=tk.DISABLED)
-        self.play_dance_button.pack()
+        # self.play_dance_button.pack()
 
         self.sleep_button = tk.Button(self.root, text="Sleep", command=self.sleep, state=tk.DISABLED)
         self.sleep_button.pack()
@@ -186,6 +189,8 @@ class VirtualPetApp:
         self.pet_time_label = tk.Label(self.root, text="Pet Time: 0 pet days")
         self.pet_time_label.pack()
 
+        # self.play_catch_button.pack_forget() 
+
     def start(self):
         name = self.name_entry.get()
         if not name:
@@ -200,6 +205,7 @@ class VirtualPetApp:
 
         self.save_button.config(state=tk.NORMAL)
         self.feed_button.config(state=tk.NORMAL)
+        self.play_button.config(state=tk.NORMAL)
         self.play_catch_button.config(state=tk.NORMAL)
         self.play_puzzle_button.config(state=tk.NORMAL)
         self.play_dance_button.config(state=tk.NORMAL)
@@ -243,6 +249,7 @@ class VirtualPetApp:
 
                     self.save_button.config(state=tk.NORMAL)
                     self.feed_button.config(state=tk.NORMAL)
+                    self.play_button.config(state=tk.NORMAL)
                     self.play_catch_button.config(state=tk.NORMAL)
                     self.play_puzzle_button.config(state=tk.NORMAL)
                     self.play_dance_button.config(state=tk.NORMAL)
