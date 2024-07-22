@@ -3,17 +3,21 @@ from tkinter import messagebox, simpledialog
 import time
 import json # Lib for the JSON file format
 import os # Library to help with the save utilily
+import random 
 
 SAVE_FILE = "pets_data.json"
 
 class VirtualPet:
-    def __init__(self, name, age=0, hunger=50, happiness=50):
+    def __init__(self, name, age=0, hunger=50, happiness=50, health=100, tiredness=50):
         self.name = name
         self.age = age  # In pet days
         self.hunger = hunger
         self.happiness = happiness
+        self.health =  health 
+        self.tiredness = tiredness 
 
     def feed(self):
+        self.hunger = min(100, self.hunger + 5)
         if self.hunger > 0:
             self.hunger -= 10
             if self.hunger < 0:
@@ -22,20 +26,81 @@ class VirtualPet:
         else:
             return f"{self.name} is not hungry."
 
-    def play(self):
-        self.happiness += 10
-        if self.happiness > 100:
-            self.happiness = 100
-        self.hunger += 5
-        if self.hunger > 100:
-            self.hunger = 100
-        return f"You played with {self.name}."
+    def play(self, game_type):
+        if game_type == "catch":
+            self.happiness = min(100, self.happiness + 20)
+            self.hunger = min(100, self.hunger + 10)
+            self.tiredness = min(100, self.tiredness + 15)
+        elif game_type == "puzzle":
+            self.happiness = min(100, self.happiness + 15)
+            self.hunger = min(100, self.hunger + 5)
+            self.tiredness = min(100, self.tiredness + 10)
+        elif game_type == "dance":
+            self.happiness = min(100, self.happiness + 10)
+            self.health = min(100, self.health + 5)
+            self.hunger = min(100, self.hunger + 5)
+            self.tiredness = min(100, self.tiredness + 10)
+        
+        # Call the random_event function after playing
+        event_played = self.random_event()
+        
+        return f"You played {game_type} with {self.name}. {event_played}"
 
+    def vet(self):
+        self.health = min(100, self.health + 20)
+        self.happiness = max(0, self.happiness - 10)
+        return f"{self.name} visited the vet."
+
+    def sleep(self):
+        self.tiredness = max(0, self.tiredness - 20)
+        self.health = min(100, self.health + 10)
+        self.happiness = max(0, self.happiness - 10)
+        return f"{self.name} had a good sleep."
+
+    def random_event(self):
+        events = ["found a toy", "got hurt", "nothing happened"]
+        event = random.choice(events)
+        if event == "found a toy":
+            self.happiness = min(100, self.happiness + 10)
+            return f"{self.name} found a toy and is happier!"
+        elif event == "got hurt":
+            self.health = max(0, self.health - 10)
+            return f"{self.name} got hurt while playing and lost some health."
+        elif event == "nothing happened":
+            return f"Nothing special happened to {self.name}."
+        
     def show_status(self):
         return (f"{self.name}'s status:\n"
-                f"  Age: {self.age} pet days\n"
+                f"  Age: {self.age} days\n"
                 f"  Hunger: {self.hunger}\n"
-                f"  Happiness: {self.happiness}")
+                f"  Happiness: {self.happiness}\n"
+                f"  Health: {self.health}\n"
+                f"  Tiredness: {self.tiredness}") 
+
+    # def feed(self):
+    #     if self.hunger > 0:
+    #         self.hunger -= 10
+    #         if self.hunger < 0:
+    #             self.hunger = 0
+    #         return f"{self.name} has been fed."
+    #     else:
+    #         return f"{self.name} is not hungry."
+
+    # def play(self):
+    #     self.happiness += 10
+    #     if self.happiness > 100:
+    #         self.happiness = 100
+    #     self.hunger += 5
+    #     if self.hunger > 100:
+    #         self.hunger = 100
+    #     return f"You played with {self.name}."
+
+
+    # def show_status(self):
+    #     return (f"{self.name}'s status:\n"
+    #             f"  Age: {self.age} pet days\n"
+    #             f"  Hunger: {self.hunger}\n"
+    #             f"  Happiness: {self.happiness}")
 
     def to_dict(self, real_time_elapsed, pet_time_elapsed):
         return {
@@ -43,13 +108,15 @@ class VirtualPet:
             'age': self.age,
             'hunger': self.hunger,
             'happiness': self.happiness,
+            'tiredness': self.tiredness,
+            'health': self.health,
             'real_time_elapsed': real_time_elapsed,
             'pet_time_elapsed': pet_time_elapsed
         }
 
     @staticmethod
     def from_dict(data):
-        return VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'])
+        return VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'], data['tiredness'], data['health'])
 
 
 class VirtualPetApp:
@@ -86,8 +153,23 @@ class VirtualPetApp:
         self.feed_button = tk.Button(self.root, text="Feed", command=self.feed, state=tk.DISABLED)
         self.feed_button.pack()
 
-        self.play_button = tk.Button(self.root, text="Play", command=self.play, state=tk.DISABLED)
-        self.play_button.pack()
+        # self.play_button = tk.Button(self.root, text="Play", command=self.play, state=tk.DISABLED)
+        # self.play_button.pack()
+
+        self.play_catch_button = tk.Button(self.root, text="Play Catch", command=lambda: self.play("catch"), state=tk.DISABLED)
+        self.play_catch_button.pack()
+
+        self.play_puzzle_button = tk.Button(self.root, text="Play Puzzle", command=lambda: self.play("puzzle"), state=tk.DISABLED)
+        self.play_puzzle_button.pack()
+
+        self.play_dance_button = tk.Button(self.root, text="Play Dance", command=lambda: self.play("dance"), state=tk.DISABLED)
+        self.play_dance_button.pack()
+
+        self.sleep_button = tk.Button(self.root, text="Sleep", command=self.sleep, state=tk.DISABLED)
+        self.sleep_button.pack()
+
+        self.vet_button = tk.Button(self.root, text="Visit Vet", command=self.vet, state=tk.DISABLED)
+        self.vet_button.pack()
 
         self.status_button = tk.Button(self.root, text="Check Status", command=self.show_status, state=tk.DISABLED)
         self.status_button.pack()
@@ -118,7 +200,11 @@ class VirtualPetApp:
 
         self.save_button.config(state=tk.NORMAL)
         self.feed_button.config(state=tk.NORMAL)
-        self.play_button.config(state=tk.NORMAL)
+        self.play_catch_button.config(state=tk.NORMAL)
+        self.play_puzzle_button.config(state=tk.NORMAL)
+        self.play_dance_button.config(state=tk.NORMAL)
+        self.sleep_button.config(state=tk.NORMAL)
+        self.vet_button.config(state=tk.NORMAL)
         self.status_button.config(state=tk.NORMAL)
         self.quit_button.config(state=tk.NORMAL)
         self.start_button.config(state=tk.DISABLED)
@@ -157,7 +243,11 @@ class VirtualPetApp:
 
                     self.save_button.config(state=tk.NORMAL)
                     self.feed_button.config(state=tk.NORMAL)
-                    self.play_button.config(state=tk.NORMAL)
+                    self.play_catch_button.config(state=tk.NORMAL)
+                    self.play_puzzle_button.config(state=tk.NORMAL)
+                    self.play_dance_button.config(state=tk.NORMAL)
+                    self.sleep_button.config(state=tk.NORMAL)
+                    self.vet_button.config(state=tk.NORMAL)
                     self.status_button.config(state=tk.NORMAL)
                     self.quit_button.config(state=tk.NORMAL)
                     self.start_button.config(state=tk.DISABLED)
@@ -235,12 +325,27 @@ class VirtualPetApp:
         self.update_status(result)
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
-    def play(self):
+    def play(self, game_type):
         if not self.pet:
             return
-        result = self.pet.play()
+        result = self.pet.play(game_type)
         self.update_status(result)
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
+
+    def sleep(self):
+        if not self.pet:
+            return
+        result = self.pet.sleep()
+        self.update_status(result)
+        self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
+
+    def vet(self):
+        if not self.pet:
+            return
+        result = self.pet.vet()
+        self.update_status(result)
+        self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
+
 
     def advance_pet_time(self, seconds):
         self.pet_seconds_elapsed += seconds  # Advance pet time by given seconds
