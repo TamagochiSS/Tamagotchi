@@ -1,13 +1,13 @@
 {
     "Sally": {
         "name": "Sally",
-        "age": 12,
-        "hunger": 35,
-        "happiness": 60,
-        "tiredness": 60,
+        "age": 13,
+        "hunger": 40,
+        "happiness": 70,
+        "tiredness": 80,
         "health": 100,
-        "real_time_elapsed": 1108,
-        "pet_time_elapsed": 1093650.0
+        "real_time_elapsed": 1136,
+        "pet_time_elapsed": 1148400.0
     },
     "Iva": {
         "name": "Iva",
@@ -28,5 +28,15 @@
         "health": 100,
         "real_time_elapsed": 5,
         "pet_time_elapsed": 8100.0
+    },
+    "Gustav": {
+        "name": "Gustav",
+        "age": 0,
+        "hunger": 50,
+        "happiness": 50,
+        "tiredness": 50,
+        "health": 100,
+        "real_time_elapsed": 10,
+        "pet_time_elapsed": 1650.0
     }
 }

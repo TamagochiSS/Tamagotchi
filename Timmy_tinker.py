@@ -14,13 +14,14 @@ customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark",
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue")
 
 class VirtualPet:
-    def __init__(self, name, age=0, hunger=50, happiness=50, health=100, tiredness=50):
+    def __init__(self, name, age=0, hunger=50, happiness=50, health=100, tiredness=50, intellect=0):
         self.name = name
         self.age = age  # In pet days
         self.hunger = hunger
         self.happiness = happiness
         self.health =  health 
         self.tiredness = tiredness 
+        self.intellect =  intellect 
 
     def feed(self):
         self.hunger = min(100, self.hunger + 5)
@@ -33,15 +34,16 @@ class VirtualPet:
             return f"{self.name} is not hungry."
 
     def play(self, game_type):
-        if game_type == "catch":
+        if game_type == "hide and seek":
             self.happiness = min(100, self.happiness + 20)
             self.hunger = min(100, self.hunger + 10)
             self.tiredness = min(100, self.tiredness + 15)
-        elif game_type == "puzzle":
+        elif game_type == "memory":
             self.happiness = min(100, self.happiness + 15)
             self.hunger = min(100, self.hunger + 5)
             self.tiredness = min(100, self.tiredness + 10)
-        elif game_type == "dance":
+            self.intellect = min(100, self.intellect + 5)
+        elif game_type == "beachball":
             self.happiness = min(100, self.happiness + 10)
             self.health = min(100, self.health + 5)
             self.hunger = min(100, self.hunger + 5)
@@ -51,6 +53,26 @@ class VirtualPet:
         event_played = self.random_event()
         
         return f"You played {game_type} with {self.name}. {event_played}"
+
+    def TV(self, show_type):
+        if show_type == "cartoon":
+            self.happiness = min(100, self.happiness + 20)
+            self.hunger = min(100, self.hunger + 10)
+            self.tiredness = min(100, self.tiredness + 15)
+            self.intellect = max(0, self.intellect - 10)
+        elif show_type == "documentary":
+            self.happiness = min(100, self.happiness + 15)
+            self.hunger = min(100, self.hunger + 5)
+            self.tiredness = min(100, self.tiredness + 10)
+            self.intellect = min(100, self.intellect + 5)
+
+        # Create random show
+       
+       # Call random_show function for watching TV
+       # show_watched = self.random_show()
+        
+       # return f"You watched {show_type} with {self.name}. {show_watched}"
+
 
     def vet(self):
         self.health = min(100, self.health + 20)
@@ -64,16 +86,18 @@ class VirtualPet:
         return f"{self.name} had a good sleep."
 
     def random_event(self):
-        events = ["found a toy", "got hurt", "nothing happened"]
+        events = ["saw a seldom bird", "stumbled and got hurt", "nothing happened"]
         event = random.choice(events)
-        if event == "found a toy":
+        if event == "saw a seldom bird":
             self.happiness = min(100, self.happiness + 10)
-            return f"{self.name} found a toy and is happier!"
-        elif event == "got hurt":
+            self.intellect = min(100, self.intellect + 5)
+            return f"{self.name} saw a seldom bird and feels super happy!"
+        elif event == "stumbled and got hurt":
             self.health = max(0, self.health - 10)
-            return f"{self.name} got hurt while playing and lost some health."
+            self.intellect = max(0, self.intellect - 10)
+            return f"{self.name} lost balance and stumbled. You should get a plaster and some sweets."
         elif event == "nothing happened":
-            return f"Nothing special happened to {self.name}."
+            return f"{self.name} is very calm today."
         
     def show_status(self):
         return (f"{self.name}'s status:\n"
@@ -81,7 +105,8 @@ class VirtualPet:
                 f"  Hunger: {self.hunger}\n"
                 f"  Happiness: {self.happiness}\n"
                 f"  Health: {self.health}\n"
-                f"  Tiredness: {self.tiredness}") 
+                f"  Tiredness: {self.tiredness}\n"
+                f"  Intellect: {self.intellect}")
 
     # def feed(self):
     #     if self.hunger > 0:
@@ -116,13 +141,14 @@ class VirtualPet:
             'happiness': self.happiness,
             'tiredness': self.tiredness,
             'health': self.health,
+            'intellect': self.intellect, 
             'real_time_elapsed': real_time_elapsed,
             'pet_time_elapsed': pet_time_elapsed
         }
 
     @staticmethod
     def from_dict(data):
-        return VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'], data['tiredness'], data['health'])
+        return VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'], data['tiredness'], data['health'], data['intellect'])
 
 
 class VirtualPetApp:
@@ -143,6 +169,7 @@ class VirtualPetApp:
         self.save_button.configure(state="normal")
         self.feed_button.configure(state="normal")
         self.play_button.configure(state="normal")
+        self.TV_button.configure(state="normal")
         self.sleep_button.configure(state="normal")
         self.vet_button.configure(state="normal")
         self.status_button.configure(state="normal")
@@ -170,10 +197,13 @@ class VirtualPetApp:
         self.play_button = customtkinter.CTkButton(self.root, text="Play", command=self.show_play_buttons, state="disabled")
         self.play_button.pack(pady=5)
 
-        self.play_catch_button = customtkinter.CTkButton(self.root, text="Play Catch", command=lambda: self.play("catch"))
+        self.play_hideandseek_button = customtkinter.CTkButton(self.root, text="Play hide and seek", command=lambda: self.play("hide and seek"))
          # self.play_puzzle_button = tk.Button(self.root, text="Play Puzzle", command=lambda: [self.play("puzzle"), self.sleep_button.pack_forget()], state=tk.DISABLED)
-        self.play_puzzle_button = customtkinter.CTkButton(self.root, text="Play Puzzle", command=lambda: self.play("puzzle"))
-        self.play_dance_button = customtkinter.CTkButton(self.root, text="Play Dance", command=lambda: self.play("dance"))
+        self.play_memory_button = customtkinter.CTkButton(self.root, text="Play memory", command=lambda: self.play("memory"))
+        self.play_beachball_button = customtkinter.CTkButton(self.root, text="Play beachball", command=lambda: self.play("beachball"))
+
+        self.TV_button = customtkinter.CTkButton(self.root, text="Watch TV", command=self.TV, state="disabled")
+        self.TV_button.pack(pady=5)
 
         self.sleep_button = customtkinter.CTkButton(self.root, text="Sleep", command=self.sleep, state="disabled")
         self.sleep_button.pack(pady=5)
@@ -196,12 +226,12 @@ class VirtualPetApp:
         self.pet_time_label = customtkinter.CTkLabel(self.root, text="Pet Time: 0 pet days", text_color="darkgreen")
         self.pet_time_label.pack(pady=10)
         
-         # self.play_catch_button.pack_forget() 
+         # self.play_hideandseek_button.pack_forget() 
 
     def show_play_buttons(self):
-        self.play_catch_button.pack(pady=5)
-        self.play_puzzle_button.pack(pady=5)
-        self.play_dance_button.pack(pady=5)
+        self.play_hideandseek_button.pack(pady=5)
+        self.play_memory_button.pack(pady=5)
+        self.play_beachball_button.pack(pady=5)
         
     def start(self):
         name = self.name_entry.get()
@@ -218,9 +248,10 @@ class VirtualPetApp:
         self.save_button.configure(state=tk.NORMAL)
         self.feed_button.configure(state=tk.NORMAL)
         self.play_button.configure(state=tk.NORMAL)
-        self.play_catch_button.configure(state=tk.NORMAL)
-        self.play_puzzle_button.configure(state=tk.NORMAL)
-        self.play_dance_button.configure(state=tk.NORMAL)
+        self.TV_button.configure(state=tk.NORMAL)
+        self.play_hideandseek_button.configure(state=tk.NORMAL)
+        self.play_memory_button.configure(state=tk.NORMAL)
+        self.play_beachball_button.configure(state=tk.NORMAL)
         self.sleep_button.configure(state=tk.NORMAL)
         self.vet_button.configure(state=tk.NORMAL)
         self.status_button.configure(state=tk.NORMAL)
@@ -260,9 +291,10 @@ class VirtualPetApp:
                     self.save_button.configure(state=tk.NORMAL)
                     self.feed_button.configure(state=tk.NORMAL)
                     self.play_button.configure(state=tk.NORMAL)
-                    self.play_catch_button.configure(state=tk.NORMAL)
-                    self.play_puzzle_button.configure(state=tk.NORMAL)
-                    self.play_dance_button.configure(state=tk.NORMAL)
+                    self.TV_button.configure(state=tk.NORMAL)
+                    self.play_hideandseek_button.configure(state=tk.NORMAL)
+                    self.play_memory_button.configure(state=tk.NORMAL)
+                    self.play_beachball_button.configure(state=tk.NORMAL)
                     self.sleep_button.configure(state=tk.NORMAL)
                     self.vet_button.configure(state=tk.NORMAL)
                     self.status_button.configure(state=tk.NORMAL)
@@ -348,6 +380,14 @@ class VirtualPetApp:
         result = self.pet.play(game_type)
         self.update_status(result)
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
+
+    def TV(self, show_type): 
+        if not self.pet:
+            return
+        result = self.pet.play(show_type)
+        self.update_status(result)
+        self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
+
 
     def sleep(self):
         if not self.pet:
