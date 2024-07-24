@@ -1,11 +1,17 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
+from tkinter import ttk
 import time
 import json # Lib for the JSON file format
 import os # Library to help with the save utilily
 import random 
+import customtkinter
+import customtkinter as ctk
 
 SAVE_FILE = "pets_data.json"
+
+customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
+customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue")
 
 class VirtualPet:
     def __init__(self, name, age=0, hunger=50, happiness=50, health=100, tiredness=50):
@@ -123,74 +129,80 @@ class VirtualPetApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Virtual Pet")
-
         self.pet = None
         self.start_time = None  # Real start time
         self.real_seconds_elapsed = 0
         self.pet_seconds_elapsed = 0  # Pet time in seconds
-
         self.create_widgets()
-
-        # Check for saved pet data
-        self.load_pet_prompt()
+        self.load_pet_prompt() # Check for saved pet data
+    
+    def start(self):
+        name = self.name_entry.get()
+        self.pet = VirtualPet(name)
+        # Enable the buttons when the start button is pressed
+        self.save_button.configure(state="normal")
+        self.feed_button.configure(state="normal")
+        self.play_button.configure(state="normal")
+        self.sleep_button.configure(state="normal")
+        self.vet_button.configure(state="normal")
+        self.status_button.configure(state="normal")
+        self.quit_button.configure(state="normal")
 
     def create_widgets(self):
-        self.name_label = tk.Label(self.root, text="Enter pet's name:")
-        self.name_label.pack()
+        self.name_label = customtkinter.CTkLabel(self.root, text="Enter pet's name:")
+        self.name_label.pack(pady=5)
 
-        self.name_entry = tk.Entry(self.root)
-        self.name_entry.pack()
+        self.name_entry = customtkinter.CTkEntry(self.root)
+        self.name_entry.pack(pady=5)
 
-        self.start_button = tk.Button(self.root, text="Start", command=self.start)
-        self.start_button.pack()
+        self.start_button = customtkinter.CTkButton(self.root, text="Start", command=self.start)
+        self.start_button.pack(pady=5)
 
-        self.load_button = tk.Button(self.root, text="Load", command=self.load_pet_prompt, state=tk.NORMAL)
-        self.load_button.pack()
+        self.load_button = customtkinter.CTkButton(self.root, text="Load", command=self.load_pet_prompt)
+        self.load_button.pack(pady=5)
 
-        self.save_button = tk.Button(self.root, text="Save", command=self.save_pet, state=tk.DISABLED)
-        self.save_button.pack()
+        self.save_button = customtkinter.CTkButton(self.root, text="Save", command=self.save_pet, state="disabled")
+        self.save_button.pack(pady=5)
 
-        self.feed_button = tk.Button(self.root, text="Feed", command=self.feed, state=tk.DISABLED)
-        self.feed_button.pack()
+        self.feed_button = customtkinter.CTkButton(self.root, text="Feed", command=self.feed, state="disabled")
+        self.feed_button.pack(pady=5)
 
-        self.play_button = tk.Button(self.root, text="Play", command=lambda: [self.play_catch_button.pack(), self.play_puzzle_button.pack(), self.play_dance_button.pack()], state=tk.DISABLED)
-        self.play_button.pack()
+        self.play_button = customtkinter.CTkButton(self.root, text="Play", command=self.show_play_buttons, state="disabled")
+        self.play_button.pack(pady=5)
 
-        self.play_catch_button = tk.Button(self.root, text="Play Catch", command=lambda: self.play("catch"), state=tk.DISABLED)
-        # self.play_catch_button.pack()
+        self.play_catch_button = customtkinter.CTkButton(self.root, text="Play Catch", command=lambda: self.play("catch"))
+         # self.play_puzzle_button = tk.Button(self.root, text="Play Puzzle", command=lambda: [self.play("puzzle"), self.sleep_button.pack_forget()], state=tk.DISABLED)
+        self.play_puzzle_button = customtkinter.CTkButton(self.root, text="Play Puzzle", command=lambda: self.play("puzzle"))
+        self.play_dance_button = customtkinter.CTkButton(self.root, text="Play Dance", command=lambda: self.play("dance"))
 
-        # self.play_puzzle_button = tk.Button(self.root, text="Play Puzzle", command=lambda: [self.play("puzzle"), self.sleep_button.pack_forget()], state=tk.DISABLED)
-        # self.play_puzzle_button.pack()
+        self.sleep_button = customtkinter.CTkButton(self.root, text="Sleep", command=self.sleep, state="disabled")
+        self.sleep_button.pack(pady=5)
 
-        self.play_puzzle_button = tk.Button(self.root, text="Play Puzzle", command=lambda: self.play("puzzle"), state=tk.DISABLED)
-        # self.play_puzzle_button.pack()
+        self.vet_button = customtkinter.CTkButton(self.root, text="Visit Vet", command=self.vet, state="disabled")
+        self.vet_button.pack(pady=5)
 
-        self.play_dance_button = tk.Button(self.root, text="Play Dance", command=lambda: self.play("dance"), state=tk.DISABLED)
-        # self.play_dance_button.pack()
+        self.status_button = customtkinter.CTkButton(self.root, text="Check Status", command=self.show_status, state="disabled")
+        self.status_button.pack(pady=5)
 
-        self.sleep_button = tk.Button(self.root, text="Sleep", command=self.sleep, state=tk.DISABLED)
-        self.sleep_button.pack()
+        self.quit_button = customtkinter.CTkButton(self.root, text="Quit", command=self.root.quit, state="disabled")
+        self.quit_button.pack(pady=5)
 
-        self.vet_button = tk.Button(self.root, text="Visit Vet", command=self.vet, state=tk.DISABLED)
-        self.vet_button.pack()
+        self.status_text = customtkinter.CTkTextbox(self.root, height=200, width=400)
+        self.status_text.pack(pady=10)
 
-        self.status_button = tk.Button(self.root, text="Check Status", command=self.show_status, state=tk.DISABLED)
-        self.status_button.pack()
+        self.real_time_label = customtkinter.CTkLabel(self.root, text="Real Time: 0s", text_color="darkgreen")
+        self.real_time_label.pack(pady=10)
 
-        self.quit_button = tk.Button(self.root, text="Quit", command=self.root.quit, state=tk.DISABLED)
-        self.quit_button.pack()
+        self.pet_time_label = customtkinter.CTkLabel(self.root, text="Pet Time: 0 pet days", text_color="darkgreen")
+        self.pet_time_label.pack(pady=10)
+        
+         # self.play_catch_button.pack_forget() 
 
-        self.status_text = tk.Text(self.root, height=15, width=80)
-        self.status_text.pack()
-
-        self.real_time_label = tk.Label(self.root, text="Real Time: 0s")
-        self.real_time_label.pack()
-
-        self.pet_time_label = tk.Label(self.root, text="Pet Time: 0 pet days")
-        self.pet_time_label.pack()
-
-        # self.play_catch_button.pack_forget() 
-
+    def show_play_buttons(self):
+        self.play_catch_button.pack(pady=5)
+        self.play_puzzle_button.pack(pady=5)
+        self.play_dance_button.pack(pady=5)
+        
     def start(self):
         name = self.name_entry.get()
         if not name:
@@ -202,20 +214,20 @@ class VirtualPetApp:
         self.real_seconds_elapsed = 0  # Initialize real time elapsed
         self.pet_seconds_elapsed = 0  # Initialize pet time elapsed
         self.update_status(f"Welcome {self.pet.name}!")
-
-        self.save_button.config(state=tk.NORMAL)
-        self.feed_button.config(state=tk.NORMAL)
-        self.play_button.config(state=tk.NORMAL)
-        self.play_catch_button.config(state=tk.NORMAL)
-        self.play_puzzle_button.config(state=tk.NORMAL)
-        self.play_dance_button.config(state=tk.NORMAL)
-        self.sleep_button.config(state=tk.NORMAL)
-        self.vet_button.config(state=tk.NORMAL)
-        self.status_button.config(state=tk.NORMAL)
-        self.quit_button.config(state=tk.NORMAL)
-        self.start_button.config(state=tk.DISABLED)
-        self.load_button.config(state=tk.DISABLED)
-        self.name_entry.config(state=tk.DISABLED)
+        
+        self.save_button.configure(state=tk.NORMAL)
+        self.feed_button.configure(state=tk.NORMAL)
+        self.play_button.configure(state=tk.NORMAL)
+        self.play_catch_button.configure(state=tk.NORMAL)
+        self.play_puzzle_button.configure(state=tk.NORMAL)
+        self.play_dance_button.configure(state=tk.NORMAL)
+        self.sleep_button.configure(state=tk.NORMAL)
+        self.vet_button.configure(state=tk.NORMAL)
+        self.status_button.configure(state=tk.NORMAL)
+        self.quit_button.configure(state=tk.NORMAL)
+        self.start_button.configure(state=tk.DISABLED)
+        self.load_button.configure(state=tk.DISABLED)
+        self.name_entry.configure(state=tk.DISABLED)
 
         self.update_times()
         self.update_pet_time()
@@ -244,22 +256,20 @@ class VirtualPetApp:
                     self.real_seconds_elapsed = pet_data['real_time_elapsed']
                     self.pet_seconds_elapsed = pet_data['pet_time_elapsed']
                     self.start_time = time.time() - self.real_seconds_elapsed
-
                     self.update_status(f"Welcome back {self.pet.name}!") # Welcome message
-
-                    self.save_button.config(state=tk.NORMAL)
-                    self.feed_button.config(state=tk.NORMAL)
-                    self.play_button.config(state=tk.NORMAL)
-                    self.play_catch_button.config(state=tk.NORMAL)
-                    self.play_puzzle_button.config(state=tk.NORMAL)
-                    self.play_dance_button.config(state=tk.NORMAL)
-                    self.sleep_button.config(state=tk.NORMAL)
-                    self.vet_button.config(state=tk.NORMAL)
-                    self.status_button.config(state=tk.NORMAL)
-                    self.quit_button.config(state=tk.NORMAL)
-                    self.start_button.config(state=tk.DISABLED)
-                    self.load_button.config(state=tk.DISABLED)
-                    self.name_entry.config(state=tk.DISABLED)
+                    self.save_button.configure(state=tk.NORMAL)
+                    self.feed_button.configure(state=tk.NORMAL)
+                    self.play_button.configure(state=tk.NORMAL)
+                    self.play_catch_button.configure(state=tk.NORMAL)
+                    self.play_puzzle_button.configure(state=tk.NORMAL)
+                    self.play_dance_button.configure(state=tk.NORMAL)
+                    self.sleep_button.configure(state=tk.NORMAL)
+                    self.vet_button.configure(state=tk.NORMAL)
+                    self.status_button.configure(state=tk.NORMAL)
+                    self.quit_button.configure(state=tk.NORMAL)
+                    self.start_button.configure(state=tk.DISABLED)
+                    self.load_button.configure(state=tk.DISABLED)
+                    self.name_entry.configure(state=tk.DISABLED)
 
                     self.update_times()
                     self.update_pet_time()
@@ -293,7 +303,7 @@ class VirtualPetApp:
             current_time = time.time()
             real_time_elapsed = current_time - self.start_time
             self.real_seconds_elapsed = int(real_time_elapsed)
-            self.real_time_label.config(text=f"Real Time: {self.format_real_time(self.real_seconds_elapsed)}")
+            self.real_time_label.configure(text=f"Real Time: {self.format_real_time(self.real_seconds_elapsed)}")
 
         # Schedule the update_times method to run again after 1000ms (1s)
         self.root.after(1000, self.update_times)
@@ -308,7 +318,7 @@ class VirtualPetApp:
             if self.pet.age > old_age:
                 self.update_status(f"A new pet day has passed. {self.pet.name} is now {self.pet.age} pet days old.")
 
-            self.pet_time_label.config(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
+            self.pet_time_label.configure(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
 
         # Schedule the update_pet_time method to run again after 1s
         self.root.after(1000, self.update_pet_time)
@@ -353,7 +363,6 @@ class VirtualPetApp:
         self.update_status(result)
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
-
     def advance_pet_time(self, seconds):
         self.pet_seconds_elapsed += seconds  # Advance pet time by given seconds
         pet_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
@@ -361,7 +370,7 @@ class VirtualPetApp:
         self.pet.age = int(pet_days_elapsed)  # Update pet age in pet days
         if self.pet.age > old_age:
             self.update_status(f"A new pet day has passed. {self.pet.name} is now {self.pet.age} pet days old.")
-        self.pet_time_label.config(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
+        self.pet_time_label.configure(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
 
     def show_status(self):
         if not self.pet:
