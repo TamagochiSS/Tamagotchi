@@ -3,8 +3,8 @@ from tkinter import messagebox, simpledialog
 from tkinter import ttk
 from PIL import Image, ImageTk
 import time
-import json # Lib for the JSON file format
-import os # Library to help with the save utilily
+import json  # Lib for the JSON file format
+import os  # Library to help with the save utilily
 import random 
 import customtkinter
 import customtkinter as ctk
@@ -109,31 +109,6 @@ class VirtualPet:
                 f"  Tiredness: {self.tiredness}\n"
                 f"  Intellect: {self.intellect}")
 
-    # def feed(self):
-    #     if self.hunger > 0:
-    #         self.hunger -= 10
-    #         if self.hunger < 0:
-    #             self.hunger = 0
-    #         return f"{self.name} has been fed."
-    #     else:
-    #         return f"{self.name} is not hungry."
-
-    # def play(self):
-    #     self.happiness += 10
-    #     if self.happiness > 100:
-    #         self.happiness = 100
-    #     self.hunger += 5
-    #     if self.hunger > 100:
-    #         self.hunger = 100
-    #     return f"You played with {self.name}."
-
-
-    # def show_status(self):
-    #     return (f"{self.name}'s status:\n"
-    #             f"  Age: {self.age} pet days\n"
-    #             f"  Hunger: {self.hunger}\n"
-    #             f"  Happiness: {self.happiness}")
-
     def to_dict(self, real_time_elapsed, pet_time_elapsed):
         return {
             'name': self.name,
@@ -145,13 +120,13 @@ class VirtualPet:
             'intellect': self.intellect, 
             'real_time_elapsed': real_time_elapsed,
             'pet_time_elapsed': pet_time_elapsed,
-            'selected_animal': self.selected_animal  # Judit – 23.07.2024: Save the selected animal
+            'selected_animal': self.selected_animal  # Judit – 25.07.2024: Save the selected animal
         }
 
     @staticmethod
     def from_dict(data):
-        pet = VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'], data['tiredness'], data['health'], data['Intelect'])
-        pet.selected_animal = data.get('selected_animal', 'cat')  # Judit – 23.07.2024: Default to 'cat' if not found
+        pet = VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'], data['tiredness'], data['health'], data['intellect'])
+        pet.selected_animal = data.get('selected_animal', 'cat')  # Judit – 25.07.2024: Default to 'cat' if not found
         return pet
 
 class VirtualPetApp:
@@ -162,11 +137,11 @@ class VirtualPetApp:
         self.start_time = None  # Real start time
         self.real_seconds_elapsed = 0
         self.pet_seconds_elapsed = 0  # Pet time in seconds
-        self.load_images()  # Judit – 23.07.2024: Load and scale images once
+        self.load_images()  # Judit – 25.07.2024: Load and scale images once
         self.create_widgets()
         self.load_pet_prompt() # Check for saved pet data
     
-    def load_images(self):  # Judit – 23.07.2024: Load and scale images once
+    def load_images(self):  # Judit – 25.07.2024: Load and scale images once
         self.animal_options = ["cat", "chicken", "shrimp", "sheep"]
         self.animal_images = {}
         for animal in self.animal_options:
@@ -176,7 +151,14 @@ class VirtualPetApp:
             image = Image.open(image_path)
             resized_image = image.resize((100, 100), Image.LANCZOS)  # Resize the image to a smaller format
             self.animal_images[animal] = ImageTk.PhotoImage(resized_image)
-    
+        
+        # Load button images
+        self.play_image = ImageTk.PhotoImage(Image.open('buttons/play_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
+        self.feed_image = ImageTk.PhotoImage(Image.open('buttons/feed_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
+        self.TV_image = ImageTk.PhotoImage(Image.open('buttons/tv_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
+        self.sleep_image = ImageTk.PhotoImage(Image.open('buttons/sleep_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
+        self.vet_image = ImageTk.PhotoImage(Image.open('buttons/vet_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
+
     def start(self):
         name = self.name_entry.get()
         self.pet = VirtualPet(name)
@@ -220,10 +202,10 @@ class VirtualPetApp:
         self.save_button = customtkinter.CTkButton(self.middle_frame, text="Save", command=self.save_pet, state="disabled")
         self.save_button.pack(side="left", padx=5)
 
-        self.feed_button = customtkinter.CTkButton(self.middle_frame, text="Feed", command=self.feed, state="disabled")
+        self.feed_button = customtkinter.CTkButton(self.middle_frame, text="Feed", image=self.feed_image, compound="top", command=self.feed, state="disabled")  # Judit – 25.07.2024
         self.feed_button.pack(side="left", padx=5)
 
-        self.play_button = customtkinter.CTkButton(self.middle_frame, text="Play", command=self.show_play_buttons, state="disabled")
+        self.play_button = customtkinter.CTkButton(self.middle_frame, text="Play", image=self.play_image, compound="top", command=self.show_play_buttons, state="disabled")  # Judit – 25.07.2024
         self.play_button.pack(side="left", padx=5)
 
         self.play_hideandseek_button = customtkinter.CTkButton(self.root, text="Play hide and seek", command=lambda: self.play("hide and seek"))
@@ -231,13 +213,13 @@ class VirtualPetApp:
         self.play_memory_button = customtkinter.CTkButton(self.root, text="Play memory", command=lambda: self.play("memory"))
         self.play_beachball_button = customtkinter.CTkButton(self.root, text="Play beachball", command=lambda: self.play("beachball"))
 
-        self.TV_button = customtkinter.CTkButton(self.middle_frame, text="Watch TV", command=self.TV, state="disabled")
+        self.TV_button = customtkinter.CTkButton(self.middle_frame, text="Watch TV", image=self.TV_image, compound="top", command=self.TV, state="disabled")  # Judit – 25.07.2024
         self.TV_button.pack(side="left", padx=5)
 
-        self.sleep_button = customtkinter.CTkButton(self.middle_frame, text="Sleep", command=self.sleep, state="disabled")
+        self.sleep_button = customtkinter.CTkButton(self.middle_frame, text="Sleep", image=self.sleep_image, compound="top", command=self.sleep, state="disabled")  # Judit – 25.07.2024
         self.sleep_button.pack(side="left", padx=5)
 
-        self.vet_button = customtkinter.CTkButton(self.middle_frame, text="Visit Vet", command=self.vet, state="disabled")
+        self.vet_button = customtkinter.CTkButton(self.middle_frame, text="Visit Vet", image=self.vet_image, compound="top", command=self.vet, state="disabled")  # Judit – 25.07.2024
         self.vet_button.pack(side="left", padx=5)
 
         self.status_button = customtkinter.CTkButton(self.middle_frame, text="Check Status", command=self.show_status, state="disabled")
@@ -273,7 +255,7 @@ class VirtualPetApp:
             return
 
         self.pet = VirtualPet(name)
-        self.pet.selected_animal = self.selected_animal  # Judit – 23.07.2024: Save the selected animal
+        self.pet.selected_animal = self.selected_animal  # Judit – 25.07.2024: Save the selected animal
         self.start_time = time.time()  # Set the start time
         self.real_seconds_elapsed = 0  # Initialize real time elapsed
         self.pet_seconds_elapsed = 0  # Initialize pet time elapsed
@@ -297,12 +279,12 @@ class VirtualPetApp:
         self.update_times()
         self.update_pet_time()
 
-    def pet_not_found(self):  # Judit – 23.07.2024: Handle pet not found scenario
+    def pet_not_found(self):  # Judit – 25.07.2024: Handle pet not found scenario
         messagebox.showinfo("Info", "Pet not found. Please select a new pet.")
         self.create_animal_selection_widgets()
 
     def create_animal_selection_widgets(self):
-        # Judit – 23.07.2024: Animal selection
+        # Judit – 25.07.2024: Animal selection
         self.animal_label = tk.Label(self.root, text="Wähle ein Tier:")
         self.animal_label.pack()
 
@@ -338,7 +320,7 @@ class VirtualPetApp:
                 if pet_name and pet_name in pet_names:
                     self.load_pet(pet_name)
                 else:
-                    self.pet_not_found()  # Judit – 23.07.2024: Trigger the pet not found process
+                    self.pet_not_found()  # Judit – 25.07.2024: Trigger the pet not found process
             else:
                 messagebox.showinfo("Info", "No saved pets available.")
 
@@ -352,7 +334,7 @@ class VirtualPetApp:
                     self.real_seconds_elapsed = pet_data['real_time_elapsed']
                     self.pet_seconds_elapsed = pet_data['pet_time_elapsed']
                     self.start_time = time.time() - self.real_seconds_elapsed
-                    self.selected_animal = pet_data.get('selected_animal', 'cat')  # Judit – 23.07.2024: Default to 'cat' if not found
+                    self.selected_animal = pet_data.get('selected_animal', 'cat')  # Judit – 25.07.2024: Default to 'cat' if not found
                     self.update_status(f"Welcome back {self.pet.name}!") # Welcome message
                     self.pet_image_label.config(image=self.animal_images[self.selected_animal])  # Display the selected pet's image
                     self.save_button.configure(state=tk.NORMAL)
