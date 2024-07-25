@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
 from tkinter import ttk
+from PIL import Image, ImageTk
 import time
 import json # Lib for the JSON file format
 import os # Library to help with the save utilily
@@ -143,13 +144,15 @@ class VirtualPet:
             'health': self.health,
             'intellect': self.intellect, 
             'real_time_elapsed': real_time_elapsed,
-            'pet_time_elapsed': pet_time_elapsed
+            'pet_time_elapsed': pet_time_elapsed,
+            'selected_animal': self.selected_animal  # Judit – 23.07.2024: Save the selected animal
         }
 
     @staticmethod
     def from_dict(data):
-        return VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'], data['tiredness'], data['health'], data['intellect'])
-
+        pet = VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'], data['tiredness'], data['health'], data['Intelect'])
+        pet.selected_animal = data.get('selected_animal', 'cat')  # Judit – 23.07.2024: Default to 'cat' if not found
+        return pet
 
 class VirtualPetApp:
     def __init__(self, root):
@@ -159,8 +162,20 @@ class VirtualPetApp:
         self.start_time = None  # Real start time
         self.real_seconds_elapsed = 0
         self.pet_seconds_elapsed = 0  # Pet time in seconds
+        self.load_images()  # Judit – 23.07.2024: Load and scale images once
         self.create_widgets()
         self.load_pet_prompt() # Check for saved pet data
+    
+    def load_images(self):  # Judit – 23.07.2024: Load and scale images once
+        self.animal_options = ["cat", "chicken", "shrimp", "sheep"]
+        self.animal_images = {}
+        for animal in self.animal_options:
+            image_path = os.path.join('pet_pictures', f'picture_{animal}.png')  # Adjusted path to the images folder
+            if not os.path.exists(image_path):
+                continue
+            image = Image.open(image_path)
+            resized_image = image.resize((100, 100), Image.LANCZOS)  # Resize the image to a smaller format
+            self.animal_images[animal] = ImageTk.PhotoImage(resized_image)
     
     def start(self):
         name = self.name_entry.get()
@@ -176,55 +191,73 @@ class VirtualPetApp:
         self.quit_button.configure(state="normal")
 
     def create_widgets(self):
-        self.name_label = customtkinter.CTkLabel(self.root, text="Enter pet's name:")
-        self.name_label.pack(pady=5)
+        
+        self.top_frame = ctk.CTkFrame(self.root)
+        self.top_frame.pack(pady=10)
 
-        self.name_entry = customtkinter.CTkEntry(self.root)
-        self.name_entry.pack(pady=5)
+        self.middle_frame = ctk.CTkFrame(self.root)
+        self.middle_frame.pack(pady=10)
 
-        self.start_button = customtkinter.CTkButton(self.root, text="Start", command=self.start)
-        self.start_button.pack(pady=5)
+        self.bottom_frame = ctk.CTkFrame(self.root)
+        self.bottom_frame.pack(pady=10)
 
-        self.load_button = customtkinter.CTkButton(self.root, text="Load", command=self.load_pet_prompt)
-        self.load_button.pack(pady=5)
+        self.time_frame = ctk.CTkFrame(self.root)
+        self.time_frame.pack(pady=10)
+        
+        # Top Frame Widgets
+        self.name_label = customtkinter.CTkLabel(self.top_frame, text="Enter pet's name:")
+        self.name_label.pack(side="left", padx=5)
 
-        self.save_button = customtkinter.CTkButton(self.root, text="Save", command=self.save_pet, state="disabled")
-        self.save_button.pack(pady=5)
+        self.name_entry = customtkinter.CTkEntry(self.top_frame)
+        self.name_entry.pack(side="left", padx=5)
+        # Middle Frame Widgets
+        self.start_button = customtkinter.CTkButton(self.middle_frame, text="Start", command=self.start)
+        self.start_button.pack(side="left", padx=5)
 
-        self.feed_button = customtkinter.CTkButton(self.root, text="Feed", command=self.feed, state="disabled")
-        self.feed_button.pack(pady=5)
+        self.load_button = customtkinter.CTkButton(self.middle_frame, text="Load", command=self.load_pet_prompt)
+        self.load_button.pack(side="left", padx=5)
 
-        self.play_button = customtkinter.CTkButton(self.root, text="Play", command=self.show_play_buttons, state="disabled")
-        self.play_button.pack(pady=5)
+        self.save_button = customtkinter.CTkButton(self.middle_frame, text="Save", command=self.save_pet, state="disabled")
+        self.save_button.pack(side="left", padx=5)
+
+        self.feed_button = customtkinter.CTkButton(self.middle_frame, text="Feed", command=self.feed, state="disabled")
+        self.feed_button.pack(side="left", padx=5)
+
+        self.play_button = customtkinter.CTkButton(self.middle_frame, text="Play", command=self.show_play_buttons, state="disabled")
+        self.play_button.pack(side="left", padx=5)
 
         self.play_hideandseek_button = customtkinter.CTkButton(self.root, text="Play hide and seek", command=lambda: self.play("hide and seek"))
          # self.play_puzzle_button = tk.Button(self.root, text="Play Puzzle", command=lambda: [self.play("puzzle"), self.sleep_button.pack_forget()], state=tk.DISABLED)
         self.play_memory_button = customtkinter.CTkButton(self.root, text="Play memory", command=lambda: self.play("memory"))
         self.play_beachball_button = customtkinter.CTkButton(self.root, text="Play beachball", command=lambda: self.play("beachball"))
 
-        self.TV_button = customtkinter.CTkButton(self.root, text="Watch TV", command=self.TV, state="disabled")
-        self.TV_button.pack(pady=5)
+        self.TV_button = customtkinter.CTkButton(self.middle_frame, text="Watch TV", command=self.TV, state="disabled")
+        self.TV_button.pack(side="left", padx=5)
 
-        self.sleep_button = customtkinter.CTkButton(self.root, text="Sleep", command=self.sleep, state="disabled")
-        self.sleep_button.pack(pady=5)
+        self.sleep_button = customtkinter.CTkButton(self.middle_frame, text="Sleep", command=self.sleep, state="disabled")
+        self.sleep_button.pack(side="left", padx=5)
 
-        self.vet_button = customtkinter.CTkButton(self.root, text="Visit Vet", command=self.vet, state="disabled")
-        self.vet_button.pack(pady=5)
+        self.vet_button = customtkinter.CTkButton(self.middle_frame, text="Visit Vet", command=self.vet, state="disabled")
+        self.vet_button.pack(side="left", padx=5)
 
-        self.status_button = customtkinter.CTkButton(self.root, text="Check Status", command=self.show_status, state="disabled")
-        self.status_button.pack(pady=5)
+        self.status_button = customtkinter.CTkButton(self.middle_frame, text="Check Status", command=self.show_status, state="disabled")
+        self.status_button.pack(side="left", padx=5)
 
-        self.quit_button = customtkinter.CTkButton(self.root, text="Quit", command=self.root.quit, state="disabled")
-        self.quit_button.pack(pady=5)
+        self.quit_button = customtkinter.CTkButton(self.middle_frame, text="Quit", command=self.root.quit, state="disabled")
+        self.quit_button.pack(side="left", padx=5)
+        # Bottom Frame Widgets
+        self.status_text = customtkinter.CTkTextbox(self.bottom_frame, height=140, width=550)
+        self.status_text.pack(side="left", padx=5)
 
-        self.status_text = customtkinter.CTkTextbox(self.root, height=200, width=400)
-        self.status_text.pack(pady=10)
+   # Time Frame Widgets
+        self.real_time_label = customtkinter.CTkLabel(self.time_frame, text="Real Time: 0s", text_color="darkgreen")
+        self.real_time_label.pack(side="left", padx=10)
 
-        self.real_time_label = customtkinter.CTkLabel(self.root, text="Real Time: 0s", text_color="darkgreen")
-        self.real_time_label.pack(pady=10)
-
-        self.pet_time_label = customtkinter.CTkLabel(self.root, text="Pet Time: 0 pet days", text_color="darkgreen")
-        self.pet_time_label.pack(pady=10)
+        self.pet_time_label = customtkinter.CTkLabel(self.time_frame, text="Pet Time: 0 pet days", text_color="darkgreen")
+        self.pet_time_label.pack(side="left", padx=10)
+        
+        self.pet_image_label = tk.Label(self.root)
+        self.pet_image_label.pack()  # To display the selected pet's image after naming
         
          # self.play_hideandseek_button.pack_forget() 
 
@@ -240,11 +273,12 @@ class VirtualPetApp:
             return
 
         self.pet = VirtualPet(name)
+        self.pet.selected_animal = self.selected_animal  # Judit – 23.07.2024: Save the selected animal
         self.start_time = time.time()  # Set the start time
         self.real_seconds_elapsed = 0  # Initialize real time elapsed
         self.pet_seconds_elapsed = 0  # Initialize pet time elapsed
         self.update_status(f"Welcome {self.pet.name}!")
-        
+        self.pet_image_label.config(image=self.animal_images[self.selected_animal])  # Display selected pet's image
         self.save_button.configure(state=tk.NORMAL)
         self.feed_button.configure(state=tk.NORMAL)
         self.play_button.configure(state=tk.NORMAL)
@@ -263,6 +297,37 @@ class VirtualPetApp:
         self.update_times()
         self.update_pet_time()
 
+    def pet_not_found(self):  # Judit – 23.07.2024: Handle pet not found scenario
+        messagebox.showinfo("Info", "Pet not found. Please select a new pet.")
+        self.create_animal_selection_widgets()
+
+    def create_animal_selection_widgets(self):
+        # Judit – 23.07.2024: Animal selection
+        self.animal_label = tk.Label(self.root, text="Wähle ein Tier:")
+        self.animal_label.pack()
+
+        self.animal_buttons = {}
+        button_frame = tk.Frame(self.root)  # Create a frame to hold the buttons
+        button_frame.pack()
+
+        for animal in self.animal_options:
+            self.animal_buttons[animal] = tk.Button(button_frame, image=self.animal_images[animal], command=lambda a=animal: self.select_animal(a))
+            self.animal_buttons[animal].pack(side=tk.LEFT, padx=10, pady=10)  # Add padding for spacing
+
+    def select_animal(self, animal):
+        self.selected_animal = animal
+
+        for button in self.animal_buttons.values():
+            button.pack_forget()
+        self.animal_label.pack_forget()
+
+        self.create_name_widgets()
+
+    def create_name_widgets(self):
+        self.name_label.pack()
+        self.name_entry.pack()
+        self.start_button.pack()
+
     def load_pet_prompt(self): #Definition used for loading prompt when game starts
         if os.path.exists(SAVE_FILE):
             with open(SAVE_FILE, "r") as file: # Read mode
@@ -273,7 +338,7 @@ class VirtualPetApp:
                 if pet_name and pet_name in pet_names:
                     self.load_pet(pet_name)
                 else:
-                    messagebox.showerror("Error", "Pet not found.")
+                    self.pet_not_found()  # Judit – 23.07.2024: Trigger the pet not found process
             else:
                 messagebox.showinfo("Info", "No saved pets available.")
 
@@ -287,7 +352,9 @@ class VirtualPetApp:
                     self.real_seconds_elapsed = pet_data['real_time_elapsed']
                     self.pet_seconds_elapsed = pet_data['pet_time_elapsed']
                     self.start_time = time.time() - self.real_seconds_elapsed
+                    self.selected_animal = pet_data.get('selected_animal', 'cat')  # Judit – 23.07.2024: Default to 'cat' if not found
                     self.update_status(f"Welcome back {self.pet.name}!") # Welcome message
+                    self.pet_image_label.config(image=self.animal_images[self.selected_animal])  # Display the selected pet's image
                     self.save_button.configure(state=tk.NORMAL)
                     self.feed_button.configure(state=tk.NORMAL)
                     self.play_button.configure(state=tk.NORMAL)

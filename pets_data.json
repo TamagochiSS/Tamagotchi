@@ -6,8 +6,10 @@
         "happiness": 70,
         "tiredness": 80,
         "health": 100,
+        "intellect": 0,
         "real_time_elapsed": 1136,
-        "pet_time_elapsed": 1148400.0
+        "pet_time_elapsed": 1148400.0,
+        "selected_animal": "sheep"
     },
     "Iva": {
         "name": "Iva",
@@ -16,8 +18,10 @@
         "happiness": 100,
         "tiredness": 85,
         "health": 100,
+        "intellect": 0,
         "real_time_elapsed": 102,
-        "pet_time_elapsed": 94650.0
+        "pet_time_elapsed": 94650.0,
+        "selected_animal": "sheep"
     },
     "Polly": {
         "name": "Polly",
@@ -26,8 +30,10 @@
         "happiness": 50,
         "tiredness": 85,
         "health": 100,
+        "intellect": 0,
         "real_time_elapsed": 5,
-        "pet_time_elapsed": 8100.0
+        "pet_time_elapsed": 8100.0,
+        "selected_animal": "sheep"
     },
     "Gustav": {
         "name": "Gustav",
@@ -36,7 +42,33 @@
         "happiness": 50,
         "tiredness": 50,
         "health": 100,
+        "intellect": 0,
         "real_time_elapsed": 10,
-        "pet_time_elapsed": 1650.0
+        "pet_time_elapsed": 1650.0,
+        "selected_animal": "sheep"
+    },
+    "ada": {
+        "name": "ada",
+        "age": 27,
+        "hunger": 50,
+        "happiness": 50,
+        "tiredness": 50,
+        "health": 100,
+        "intellect": 0,
+        "real_time_elapsed": 16176,
+        "pet_time_elapsed": 2407650.0,
+        "selected_animal": "sheep"
+    },
+    "Marko": {
+        "name": "Marko",
+        "age": 0,
+        "hunger": 40,
+        "happiness": 40,
+        "tiredness": 30,
+        "health": 100,
+        "intellect": 0,
+        "real_time_elapsed": 25,
+        "pet_time_elapsed": 25500.0,
+        "selected_animal": "sheep"
     }
 }

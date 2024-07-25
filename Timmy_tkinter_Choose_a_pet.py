@@ -117,7 +117,10 @@ class VirtualPetApp:
         self.animal_options = ["cat", "chicken", "shrimp", "sheep"]
         self.animal_images = {}
         for animal in self.animal_options:
-            image = Image.open(f'picture_{animal}.png')
+            image_path = os.path.join('pet_pictures', f'picture_{animal}.png')  # Adjusted path to the images folder
+            if not os.path.exists(image_path):
+                continue
+            image = Image.open(image_path)
             resized_image = image.resize((100, 100), Image.LANCZOS)  # Resize the image to a smaller format
             self.animal_images[animal] = ImageTk.PhotoImage(resized_image)
 
