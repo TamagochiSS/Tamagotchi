@@ -15,7 +15,13 @@ customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark",
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue")
 
 class VirtualPet:
+    '''
+    VirtualPet class, holding all functions to change the pets properties/statistics
+    '''
     def __init__(self, name, age=0, hunger=50, happiness=50, health=100, tiredness=50, intellect=0):
+        ''' Constructor to initialize a VirtualPet instance, used with default parameters as all pets are supposed 
+        to start with the same preconditions.
+        '''
         self.name = name
         self.age = age  # In pet days
         self.hunger = hunger
@@ -25,6 +31,9 @@ class VirtualPet:
         self.intellect =  intellect 
 
     def feed(self):
+        '''
+        feed VirtualPet and change hunger score
+        '''
         self.hunger = min(100, self.hunger + 5)
         if self.hunger > 0:
             self.hunger -= 10
@@ -35,6 +44,14 @@ class VirtualPet:
             return f"{self.name} is not hungry."
 
     def play(self, game_type):
+        '''
+        play with VirtualPet. pet statistics change depending on game_type
+        
+        Parameters
+        ----------
+        game_type: str
+            defines which game the pet is playing 
+        '''
         if game_type == "hide and seek":
             self.happiness = min(100, self.happiness + 20)
             self.hunger = min(100, self.hunger + 10)
@@ -50,10 +67,11 @@ class VirtualPet:
             self.hunger = min(100, self.hunger + 5)
             self.tiredness = min(100, self.tiredness + 10)
         
-        # Call the random_event function after playing
+        # Call the random_event function after playing to print random event to console
         event_played = self.random_event()
         
         return f"You played {game_type} with {self.name}. {event_played}"
+
 
     def TV(self, show_type):
         if show_type == "cartoon":
@@ -76,17 +94,26 @@ class VirtualPet:
 
 
     def vet(self):
+        '''
+        send VirtualPet to the vet, improve health, decreases happiness points
+        '''
         self.health = min(100, self.health + 20)
         self.happiness = max(0, self.happiness - 10)
         return f"{self.name} visited the vet."
 
     def sleep(self):
+        '''
+        send VirtualPet to sleep. Reduces happiness and tiredness, but improves health.
+        '''
         self.tiredness = max(0, self.tiredness - 20)
         self.health = min(100, self.health + 10)
         self.happiness = max(0, self.happiness - 10)
         return f"{self.name} had a good sleep."
 
     def random_event(self):
+        '''
+        when VirtualPet plays, a random event is caused, which changes both the scores and prints the event to the console
+        '''
         events = ["saw a seldom bird", "stumbled and got hurt", "nothing happened"]
         event = random.choice(events)
         if event == "saw a seldom bird":
@@ -101,6 +128,9 @@ class VirtualPet:
             return f"{self.name} is very calm today."
         
     def show_status(self):
+        '''
+        retrieve the current status of your pet
+        '''
         return (f"{self.name}'s status:\n"
                 f"  Age: {self.age} days\n"
                 f"  Hunger: {self.hunger}\n"
@@ -110,6 +140,9 @@ class VirtualPet:
                 f"  Intellect: {self.intellect}")
 
     def to_dict(self, real_time_elapsed, pet_time_elapsed):
+        '''
+        returns a dictionary containing all pet data.
+        '''
         return {
             'name': self.name,
             'age': self.age,
@@ -130,7 +163,14 @@ class VirtualPet:
         return pet
 
 class VirtualPetApp:
+    '''
+    class VirtualPetApp is used to visualize the VirtualPet and allows the user to change the pet scores by using 
+    different "buttons"
+    '''
     def __init__(self, root):
+        '''
+        Initialize the VirtualPetApp
+        '''
         self.root = root
         self.root.title("Virtual Pet")
         self.pet = None
@@ -142,6 +182,9 @@ class VirtualPetApp:
         self.load_pet_prompt() # Check for saved pet data
     
     def load_images(self):  # Judit – 25.07.2024: Load and scale images once
+        '''
+    	
+        '''
         self.animal_options = ["cat", "chicken", "shrimp", "sheep"]
         self.animal_images = {}
         for animal in self.animal_options:
@@ -160,6 +203,8 @@ class VirtualPetApp:
         self.vet_image = ImageTk.PhotoImage(Image.open('buttons/vet_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
 
     def start(self):
+        '''
+        '''
         name = self.name_entry.get()
         self.pet = VirtualPet(name)
         # Enable the buttons when the start button is pressed
@@ -173,6 +218,8 @@ class VirtualPetApp:
         self.quit_button.configure(state="normal")
 
     def create_widgets(self):
+        '''
+        '''
         
         self.top_frame = ctk.CTkFrame(self.root)
         self.top_frame.pack(pady=10)
@@ -244,11 +291,16 @@ class VirtualPetApp:
          # self.play_hideandseek_button.pack_forget() 
 
     def show_play_buttons(self):
+        '''
+        function to display play buttons to choose from different play activities.
+        '''
         self.play_hideandseek_button.pack(pady=5)
         self.play_memory_button.pack(pady=5)
         self.play_beachball_button.pack(pady=5)
         
     def start(self):
+        '''
+        '''
         name = self.name_entry.get()
         if not name:
             messagebox.showwarning("Input Error", "Please enter a name for your pet.")
@@ -280,6 +332,9 @@ class VirtualPetApp:
         self.update_pet_time()
 
     def pet_not_found(self):  # Judit – 25.07.2024: Handle pet not found scenario
+        '''
+        handles pet not found scenario
+        '''
         messagebox.showinfo("Info", "Pet not found. Please select a new pet.")
         self.create_animal_selection_widgets()
 
@@ -417,6 +472,9 @@ class VirtualPetApp:
         return f"{int(pet_days)} pet days {int(pet_hours)}h {int(pet_minutes)}m {int(pet_seconds)}s"
 
     def feed(self):
+        '''
+        action caused by clicking feed-button. Calls feed function of pet.
+        '''
         if not self.pet:
             return
         result = self.pet.feed()
@@ -424,6 +482,9 @@ class VirtualPetApp:
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def play(self, game_type):
+        '''
+        Action caused by clicking play-button. Calls play function of pet.
+        '''
         if not self.pet:
             return
         result = self.pet.play(game_type)
@@ -431,6 +492,9 @@ class VirtualPetApp:
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def TV(self, show_type): 
+        '''
+        Action causes by clicking TV-button. Calls ?
+        '''
         if not self.pet:
             return
         result = self.pet.play(show_type)
@@ -439,6 +503,9 @@ class VirtualPetApp:
 
 
     def sleep(self):
+        '''
+        Action caused by clicking sleep button. Calls sleep function of VirtualPet.
+        '''
         if not self.pet:
             return
         result = self.pet.sleep()
@@ -446,6 +513,9 @@ class VirtualPetApp:
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def vet(self):
+        '''
+        Action caused by vet button. Calls vet function of VirtualPet.
+        '''
         if not self.pet:
             return
         result = self.pet.vet()
@@ -453,6 +523,7 @@ class VirtualPetApp:
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def advance_pet_time(self, seconds):
+        
         self.pet_seconds_elapsed += seconds  # Advance pet time by given seconds
         pet_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
         old_age = self.pet.age  
@@ -472,6 +543,7 @@ class VirtualPetApp:
         self.status_text.see(tk.END)
 
 if __name__ == "__main__":
+
     root = tk.Tk()
     app = VirtualPetApp(root)
     root.mainloop()
