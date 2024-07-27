@@ -1,18 +1,16 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-from tkinter import ttk
-from PIL import Image, ImageTk
+from PIL import Image
 import time
 import json  # Lib for the JSON file format
 import os  # Library to help with the save utilily
 import random 
-import customtkinter
 import customtkinter as ctk
 
 SAVE_FILE = "pets_data.json"
 
-customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue")
+ctk.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
+ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue")
 
 class VirtualPet:
     '''
@@ -84,14 +82,6 @@ class VirtualPet:
             self.hunger = min(100, self.hunger + 5)
             self.tiredness = min(100, self.tiredness + 10)
             self.intellect = min(100, self.intellect + 5)
-
-        # Create random show
-       
-       # Call random_show function for watching TV
-       # show_watched = self.random_show()
-        
-       # return f"You watched {show_type} with {self.name}. {show_watched}"
-
 
     def vet(self):
         '''
@@ -182,7 +172,7 @@ class VirtualPetApp:
         self.pet_seconds_elapsed = 0  # Pet time in seconds
         self.load_images()  # Judit – 25.07.2024: Load and scale images once
         self.create_widgets()
-        self.load_pet_prompt() # Check for saved pet data
+        self.create_animal_selection_widgets()  # Judit – 27.02.2024: Create animal selection widgets initially
         
         
     
@@ -198,29 +188,47 @@ class VirtualPetApp:
                 continue
             image = Image.open(image_path)
             resized_image = image.resize((100, 100), Image.LANCZOS)  # Resize the image to a smaller format
-            self.animal_images[animal] = ImageTk.PhotoImage(resized_image)
+            self.animal_images[animal] = ctk.CTkImage(light_image=resized_image, dark_image=resized_image, size=(100, 100))  # Judit – 27.02.2024: Convert to CTkImage
         
         # Load button images
-        self.play_image = ImageTk.PhotoImage(Image.open('buttons/play_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
-        self.feed_image = ImageTk.PhotoImage(Image.open('buttons/feed_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
-        self.TV_image = ImageTk.PhotoImage(Image.open('buttons/tv_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
-        self.sleep_image = ImageTk.PhotoImage(Image.open('buttons/sleep_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
-        self.vet_image = ImageTk.PhotoImage(Image.open('buttons/vet_button.png').resize((50, 50), Image.LANCZOS))  # Judit – 25.07.2024
+        self.play_image = ctk.CTkImage(light_image=Image.open('buttons/play_button.png').resize((50, 50), Image.LANCZOS), dark_image=Image.open('buttons/play_button.png').resize((50, 50), Image.LANCZOS), size=(50, 50))  # Judit – 27.02.2024
+        self.feed_image = ctk.CTkImage(light_image=Image.open('buttons/feed_button.png').resize((50, 50), Image.LANCZOS), dark_image=Image.open('buttons/feed_button.png').resize((50, 50), Image.LANCZOS), size=(50, 50))  # Judit – 27.02.2024
+        self.TV_image = ctk.CTkImage(light_image=Image.open('buttons/tv_button.png').resize((50, 50), Image.LANCZOS), dark_image=Image.open('buttons/tv_button.png').resize((50, 50), Image.LANCZOS), size=(50, 50))  # Judit – 27.02.2024
+        self.sleep_image = ctk.CTkImage(light_image=Image.open('buttons/sleep_button.png').resize((50, 50), Image.LANCZOS), dark_image=Image.open('buttons/sleep_button.png').resize((50, 50), Image.LANCZOS), size=(50, 50))  # Judit – 27.02.2024
+        self.vet_image = ctk.CTkImage(light_image=Image.open('buttons/vet_button.png').resize((50, 50), Image.LANCZOS), dark_image=Image.open('buttons/vet_button.png').resize((50, 50), Image.LANCZOS), size=(50, 50))  # Judit – 27.02.2024
 
     def start(self):
         '''
         '''
         name = self.name_entry.get()
+        if not name:
+            messagebox.showwarning("Input Error", "Please enter a name for your pet.")
+            return
+
         self.pet = VirtualPet(name)
-        # Enable the buttons when the start button is pressed
+        self.pet.selected_animal = self.selected_animal  # Judit – 25.07.2024: Save the selected animal
+        self.start_time = time.time()  # Set the start time
+        self.real_seconds_elapsed = 0  # Initialize real time elapsed
+        self.pet_seconds_elapsed = 0  # Initialize pet time elapsed
+        self.update_status(f"Welcome {self.pet.name}!")
+        self.pet_image_label.configure(image=self.animal_images[self.selected_animal])  # Display selected pet's image
         self.save_button.configure(state="normal")
         self.feed_button.configure(state="normal")
         self.play_button.configure(state="normal")
         self.TV_button.configure(state="normal")
+        self.play_hideandseek_button.configure(state="normal")
+        self.play_memory_button.configure(state="normal")
+        self.play_beachball_button.configure(state="normal")
         self.sleep_button.configure(state="normal")
         self.vet_button.configure(state="normal")
         self.status_button.configure(state="normal")
         self.quit_button.configure(state="normal")
+        self.start_button.configure(state="disabled")
+        self.load_button.configure(state="disabled")
+        self.name_entry.configure(state="disabled")
+
+        self.update_times()
+        self.update_pet_time()
 
     def create_widgets(self):
         '''
@@ -245,73 +253,60 @@ class VirtualPetApp:
 
         
         # Top Frame Widgets
-        self.name_label = customtkinter.CTkLabel(self.top_frame, text="Enter pet's name:")
+        self.name_label = ctk.CTkLabel(self.top_frame, text="Enter pet's name:")
         self.name_label.pack(side="left", padx=5)
 
-        self.name_entry = customtkinter.CTkEntry(self.top_frame)
+        self.name_entry = ctk.CTkEntry(self.top_frame)
         self.name_entry.pack(side="left", padx=5)
         # Middle Frame Widgets
-        self.start_button = customtkinter.CTkButton(self.middle_frame, text="Start", command=self.start)
+        self.start_button = ctk.CTkButton(self.middle_frame, text="Start", command=self.start)
         self.start_button.pack(side="left", padx=5)
 
-        self.load_button = customtkinter.CTkButton(self.middle_frame, text="Load", command=self.load_pet_prompt)
+        self.load_button = ctk.CTkButton(self.middle_frame, text="Load", command=self.load_pet_prompt)
         self.load_button.pack(side="left", padx=5)
 
-        self.save_button = customtkinter.CTkButton(self.middle_frame, text="Save", command=self.save_pet, state="disabled")
+        self.save_button = ctk.CTkButton(self.middle_frame, text="Save", command=self.save_pet, state="disabled")
         self.save_button.pack(side="left", padx=5)
 
-        self.feed_button = customtkinter.CTkButton(self.middle_frame, text="Feed", image=self.feed_image, compound="top", command=self.feed, state="disabled")  # Judit – 25.07.2024
+        self.feed_button = ctk.CTkButton(self.middle_frame, text="Feed", image=self.feed_image, compound="top", command=self.feed, state="disabled")  # Judit – 25.07.2024
         self.feed_button.pack(side="left", padx=5)
 
-        #self.play_button = customtkinter.CTkButton(self.middle_frame, text="Play", image=self.play_image, compound="top", command= self.change_middle_frame_to_play_buttons, state="disabled")  # Judit – 25.07.2024
-        #self.play_button.pack(side="left", padx=5)
-
-        self.play_button = customtkinter.CTkButton(self.middle_frame, text="Play", image=self.play_image, compound="top", command= self.show_play_buttons, state="disabled")  # Judit – 25.07.2024
+        self.play_button = ctk.CTkButton(self.middle_frame, text="Play", image=self.play_image, compound="top", command= self.show_play_buttons, state="disabled")  # Judit – 25.07.2024
         self.play_button.pack(side="left", padx=5)
 
-        self.play_hideandseek_button = customtkinter.CTkButton(self.root, text="Play hide and seek", command=lambda: self.play("hide and seek"))
-         # self.play_puzzle_button = tk.Button(self.root, text="Play Puzzle", command=lambda: [self.play("puzzle"), self.sleep_button.pack_forget()], state=tk.DISABLED)
-        self.play_memory_button = customtkinter.CTkButton(self.root, text="Play memory", command=lambda: self.play("memory"))
-        self.play_beachball_button = customtkinter.CTkButton(self.root, text="Play beachball", command=lambda: self.play("beachball"))
-        self.stop_playing_button = customtkinter.CTkButton(self.root, text = "Stop Playing", command=lambda: self.remove_play_buttons())
+        self.play_hideandseek_button = ctk.CTkButton(self.root, text="Play hide and seek", command=lambda: self.play("hide and seek"))
+        self.play_memory_button = ctk.CTkButton(self.root, text="Play memory", command=lambda: self.play("memory"))
+        self.play_beachball_button = ctk.CTkButton(self.root, text="Play beachball", command=lambda: self.play("beachball"))
+        self.stop_playing_button = ctk.CTkButton(self.root, text = "Stop Playing", command=lambda: self.remove_play_buttons())
 
-        self.TV_button = customtkinter.CTkButton(self.middle_frame, text="Watch TV", image=self.TV_image, compound="top", command=self.TV, state="disabled")  # Judit – 25.07.2024
+        self.TV_button = ctk.CTkButton(self.middle_frame, text="Watch TV", image=self.TV_image, compound="top", command=self.TV, state="disabled")  # Judit – 25.07.2024
         self.TV_button.pack(side="left", padx=5)
 
-        self.sleep_button = customtkinter.CTkButton(self.middle_frame, text="Sleep", image=self.sleep_image, compound="top", command=self.sleep, state="disabled")  # Judit – 25.07.2024
+        self.sleep_button = ctk.CTkButton(self.middle_frame, text="Sleep", image=self.sleep_image, compound="top", command=self.sleep, state="disabled")  # Judit – 25.07.2024
         self.sleep_button.pack(side="left", padx=5)
 
-        self.vet_button = customtkinter.CTkButton(self.middle_frame, text="Visit Vet", image=self.vet_image, compound="top", command=self.vet, state="disabled")  # Judit – 25.07.2024
+        self.vet_button = ctk.CTkButton(self.middle_frame, text="Visit Vet", image=self.vet_image, compound="top", command=self.vet, state="disabled")  # Judit – 25.07.2024
         self.vet_button.pack(side="left", padx=5)
 
-        self.status_button = customtkinter.CTkButton(self.middle_frame, text="Check Status", command=self.show_status, state="disabled")
+        self.status_button = ctk.CTkButton(self.middle_frame, text="Check Status", command=self.show_status, state="disabled")
         self.status_button.pack(side="left", padx=5)
 
-        self.quit_button = customtkinter.CTkButton(self.middle_frame, text="Quit", command=self.root.quit, state="disabled")
+        self.quit_button = ctk.CTkButton(self.middle_frame, text="Quit", command=self.root.quit, state="disabled")
         self.quit_button.pack(side="left", padx=5)
         # Bottom Frame Widgets
-        self.status_text = customtkinter.CTkTextbox(self.bottom_frame, height=140, width=550)
+        self.status_text = ctk.CTkTextbox(self.bottom_frame, height=140, width=550)
         self.status_text.pack(side="left", padx=5)
 
    # Time Frame Widgets
-        self.real_time_label = customtkinter.CTkLabel(self.time_frame, text="Real Time: 0s", text_color="darkgreen")
+        self.real_time_label = ctk.CTkLabel(self.time_frame, text="Real Time: 0s", text_color="darkgreen")
         self.real_time_label.pack(side="left", padx=10)
 
-        self.pet_time_label = customtkinter.CTkLabel(self.time_frame, text="Pet Time: 0 pet days", text_color="darkgreen")
+        self.pet_time_label = ctk.CTkLabel(self.time_frame, text="Pet Time: 0 pet days", text_color="darkgreen")
         self.pet_time_label.pack(side="left", padx=10)
         
-        self.pet_image_label = tk.Label(self.root)
+        self.pet_image_label = ctk.CTkLabel(self.root)
         self.pet_image_label.pack()  # To display the selected pet's image after naming
         
-         # self.play_hideandseek_button.pack_forget() 
-    
-   # def change_middle_frame_to_play_buttons(self): #Anna - idea to create another frame for the play buttons, which could then be fully removed or displayed(?)
-        #middle_frame 
-        #self.play_buttons_frame = ctk.CTkFrame(self.root)
-        #self.play_buttons_frame.pack(pady=10)
-        #self.play_hide_button = customtkinter.CTkButton(self.play_buttons_frame, text="hide and seek", command=self.play('hide and seek') , state = "disabled")
-        #self.play_hide_button.pack(side="left", padx=5)
-
     def show_play_buttons(self):
         '''
         function to display play buttons to choose from different play activities.
@@ -330,61 +325,20 @@ class VirtualPetApp:
         self.play_beachball_button.pack_forget()
         self.stop_playing_button.pack_forget()
 
-    def start(self):
-        '''
-
-        '''
-        name = self.name_entry.get()
-        if not name:
-            messagebox.showwarning("Input Error", "Please enter a name for your pet.")
-            return
-
-        self.pet = VirtualPet(name)
-        self.pet.selected_animal = self.selected_animal  # Judit – 25.07.2024: Save the selected animal
-        self.start_time = time.time()  # Set the start time
-        self.real_seconds_elapsed = 0  # Initialize real time elapsed
-        self.pet_seconds_elapsed = 0  # Initialize pet time elapsed
-        self.update_status(f"Welcome {self.pet.name}!")
-        self.pet_image_label.config(image=self.animal_images[self.selected_animal])  # Display selected pet's image
-        self.save_button.configure(state=tk.NORMAL)
-        self.feed_button.configure(state=tk.NORMAL)
-        self.play_button.configure(state=tk.NORMAL)
-        self.TV_button.configure(state=tk.NORMAL)
-        self.play_hideandseek_button.configure(state=tk.NORMAL)
-        self.play_memory_button.configure(state=tk.NORMAL)
-        self.play_beachball_button.configure(state=tk.NORMAL)
-        self.sleep_button.configure(state=tk.NORMAL)
-        self.vet_button.configure(state=tk.NORMAL)
-        self.status_button.configure(state=tk.NORMAL)
-        self.quit_button.configure(state=tk.NORMAL)
-        self.start_button.configure(state=tk.DISABLED)
-        self.load_button.configure(state=tk.DISABLED)
-        self.name_entry.configure(state=tk.DISABLED)
-
-        self.update_times()
-        self.update_pet_time()
-
-    def pet_not_found(self):  # Judit – 25.07.2024: Handle pet not found scenario
-        '''
-        handles pet not found scenario
-        '''
-        messagebox.showinfo("Info", "Pet not found. Please select a new pet.")
-        self.create_animal_selection_widgets()
-
     def create_animal_selection_widgets(self):
         # Judit – 25.07.2024: Animal selection
         '''
         choose an animal
         '''
-        self.animal_label = tk.Label(self.root, text="Wähle ein Tier:")
+        self.animal_label = ctk.CTkLabel(self.root, text="Wähle ein Tier:")
         self.animal_label.pack()
 
         self.animal_buttons = {}
-        button_frame = tk.Frame(self.root)  # Create a frame to hold the buttons
+        button_frame = ctk.CTkFrame(self.root)  # Create a frame to hold the buttons
         button_frame.pack()
 
         for animal in self.animal_options:
-            self.animal_buttons[animal] = tk.Button(button_frame, image=self.animal_images[animal], command=lambda a=animal: self.select_animal(a))
+            self.animal_buttons[animal] = ctk.CTkButton(button_frame, image=self.animal_images[animal], command=lambda a=animal: self.select_animal(a))
             self.animal_buttons[animal].pack(side=tk.LEFT, padx=10, pady=10)  # Add padding for spacing
 
     def select_animal(self, animal):
@@ -436,21 +390,21 @@ class VirtualPetApp:
                     self.start_time = time.time() - self.real_seconds_elapsed
                     self.selected_animal = pet_data.get('selected_animal', 'cat')  # Judit – 25.07.2024: Default to 'cat' if not found
                     self.update_status(f"Welcome back {self.pet.name}!") # Welcome message
-                    self.pet_image_label.config(image=self.animal_images[self.selected_animal])  # Display the selected pet's image
-                    self.save_button.configure(state=tk.NORMAL)
-                    self.feed_button.configure(state=tk.NORMAL)
-                    self.play_button.configure(state=tk.NORMAL)
-                    self.TV_button.configure(state=tk.NORMAL)
-                    self.play_hideandseek_button.configure(state=tk.NORMAL)
-                    self.play_memory_button.configure(state=tk.NORMAL)
-                    self.play_beachball_button.configure(state=tk.NORMAL)
-                    self.sleep_button.configure(state=tk.NORMAL)
-                    self.vet_button.configure(state=tk.NORMAL)
-                    self.status_button.configure(state=tk.NORMAL)
-                    self.quit_button.configure(state=tk.NORMAL)
-                    self.start_button.configure(state=tk.DISABLED)
-                    self.load_button.configure(state=tk.DISABLED)
-                    self.name_entry.configure(state=tk.DISABLED)
+                    self.pet_image_label.configure(image=self.animal_images[self.selected_animal])  # Display the selected pet's image
+                    self.save_button.configure(state="normal")
+                    self.feed_button.configure(state="normal")
+                    self.play_button.configure(state="normal")
+                    self.TV_button.configure(state="normal")
+                    self.play_hideandseek_button.configure(state="normal")
+                    self.play_memory_button.configure(state="normal")
+                    self.play_beachball_button.configure(state="normal")
+                    self.sleep_button.configure(state="normal")
+                    self.vet_button.configure(state="normal")
+                    self.status_button.configure(state="normal")
+                    self.quit_button.configure(state="normal")
+                    self.start_button.configure(state="disabled")
+                    self.load_button.configure(state="disabled")
+                    self.name_entry.configure(state="disabled")
 
                     self.update_times()
                     self.update_pet_time()
