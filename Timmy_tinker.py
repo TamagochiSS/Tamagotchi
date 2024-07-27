@@ -172,7 +172,7 @@ class VirtualPetApp:
         self.pet_seconds_elapsed = 0  # Pet time in seconds
         self.load_images()  # Judit – 25.07.2024: Load and scale images once
         self.create_widgets()
-        self.create_animal_selection_widgets()  # Judit – 27.02.2024: Create animal selection widgets initially
+        self.load_pet_prompt() # Check for saved pet data
         
         
     
@@ -201,34 +201,16 @@ class VirtualPetApp:
         '''
         '''
         name = self.name_entry.get()
-        if not name:
-            messagebox.showwarning("Input Error", "Please enter a name for your pet.")
-            return
-
         self.pet = VirtualPet(name)
-        self.pet.selected_animal = self.selected_animal  # Judit – 25.07.2024: Save the selected animal
-        self.start_time = time.time()  # Set the start time
-        self.real_seconds_elapsed = 0  # Initialize real time elapsed
-        self.pet_seconds_elapsed = 0  # Initialize pet time elapsed
-        self.update_status(f"Welcome {self.pet.name}!")
-        self.pet_image_label.configure(image=self.animal_images[self.selected_animal])  # Display selected pet's image
+        # Enable the buttons when the start button is pressed
         self.save_button.configure(state="normal")
         self.feed_button.configure(state="normal")
         self.play_button.configure(state="normal")
         self.TV_button.configure(state="normal")
-        self.play_hideandseek_button.configure(state="normal")
-        self.play_memory_button.configure(state="normal")
-        self.play_beachball_button.configure(state="normal")
         self.sleep_button.configure(state="normal")
         self.vet_button.configure(state="normal")
         self.status_button.configure(state="normal")
         self.quit_button.configure(state="normal")
-        self.start_button.configure(state="disabled")
-        self.load_button.configure(state="disabled")
-        self.name_entry.configure(state="disabled")
-
-        self.update_times()
-        self.update_pet_time()
 
     def create_widgets(self):
         '''
@@ -325,6 +307,47 @@ class VirtualPetApp:
         self.play_beachball_button.pack_forget()
         self.stop_playing_button.pack_forget()
 
+    def start(self):
+        '''
+
+        '''
+        name = self.name_entry.get()
+        if not name:
+            messagebox.showwarning("Input Error", "Please enter a name for your pet.")
+            return
+
+        self.pet = VirtualPet(name)
+        self.pet.selected_animal = self.selected_animal  # Judit – 25.07.2024: Save the selected animal
+        self.start_time = time.time()  # Set the start time
+        self.real_seconds_elapsed = 0  # Initialize real time elapsed
+        self.pet_seconds_elapsed = 0  # Initialize pet time elapsed
+        self.update_status(f"Welcome {self.pet.name}!")
+        self.pet_image_label.configure(image=self.animal_images[self.selected_animal])  # Display selected pet's image
+        self.save_button.configure(state=tk.NORMAL)
+        self.feed_button.configure(state=tk.NORMAL)
+        self.play_button.configure(state=tk.NORMAL)
+        self.TV_button.configure(state=tk.NORMAL)
+        self.play_hideandseek_button.configure(state=tk.NORMAL)
+        self.play_memory_button.configure(state=tk.NORMAL)
+        self.play_beachball_button.configure(state=tk.NORMAL)
+        self.sleep_button.configure(state=tk.NORMAL)
+        self.vet_button.configure(state=tk.NORMAL)
+        self.status_button.configure(state=tk.NORMAL)
+        self.quit_button.configure(state=tk.NORMAL)
+        self.start_button.configure(state=tk.DISABLED)
+        self.load_button.configure(state=tk.DISABLED)
+        self.name_entry.configure(state=tk.DISABLED)
+
+        self.update_times()
+        self.update_pet_time()
+
+    def pet_not_found(self):  # Judit – 25.07.2024: Handle pet not found scenario
+        '''
+        handles pet not found scenario
+        '''
+        messagebox.showinfo("Info", "Pet not found. Please select a new pet.")
+        self.create_animal_selection_widgets()
+
     def create_animal_selection_widgets(self):
         # Judit – 25.07.2024: Animal selection
         '''
@@ -391,20 +414,20 @@ class VirtualPetApp:
                     self.selected_animal = pet_data.get('selected_animal', 'cat')  # Judit – 25.07.2024: Default to 'cat' if not found
                     self.update_status(f"Welcome back {self.pet.name}!") # Welcome message
                     self.pet_image_label.configure(image=self.animal_images[self.selected_animal])  # Display the selected pet's image
-                    self.save_button.configure(state="normal")
-                    self.feed_button.configure(state="normal")
-                    self.play_button.configure(state="normal")
-                    self.TV_button.configure(state="normal")
-                    self.play_hideandseek_button.configure(state="normal")
-                    self.play_memory_button.configure(state="normal")
-                    self.play_beachball_button.configure(state="normal")
-                    self.sleep_button.configure(state="normal")
-                    self.vet_button.configure(state="normal")
-                    self.status_button.configure(state="normal")
-                    self.quit_button.configure(state="normal")
-                    self.start_button.configure(state="disabled")
-                    self.load_button.configure(state="disabled")
-                    self.name_entry.configure(state="disabled")
+                    self.save_button.configure(state=tk.NORMAL)
+                    self.feed_button.configure(state=tk.NORMAL)
+                    self.play_button.configure(state=tk.NORMAL)
+                    self.TV_button.configure(state=tk.NORMAL)
+                    self.play_hideandseek_button.configure(state=tk.NORMAL)
+                    self.play_memory_button.configure(state=tk.NORMAL)
+                    self.play_beachball_button.configure(state=tk.NORMAL)
+                    self.sleep_button.configure(state=tk.NORMAL)
+                    self.vet_button.configure(state=tk.NORMAL)
+                    self.status_button.configure(state=tk.NORMAL)
+                    self.quit_button.configure(state=tk.NORMAL)
+                    self.start_button.configure(state=tk.DISABLED)
+                    self.load_button.configure(state=tk.DISABLED)
+                    self.name_entry.configure(state=tk.DISABLED)
 
                     self.update_times()
                     self.update_pet_time()
