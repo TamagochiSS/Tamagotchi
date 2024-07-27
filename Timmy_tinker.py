@@ -248,6 +248,12 @@ class VirtualPetApp:
         self.middle_frame = ctk.CTkFrame(self.root)
         self.middle_frame.pack(pady=10)
 
+        self.middle_frame_top = ctk.CTkFrame(self.middle_frame)  # Judit – 27.02.2024: New top frame for middle frame
+        self.middle_frame_top.pack(pady=5)
+
+        self.middle_frame_bottom = ctk.CTkFrame(self.middle_frame)  # Judit – 27.02.2024: New bottom frame for middle frame
+        self.middle_frame_bottom.pack(pady=5)
+
         self.bottom_frame = ctk.CTkFrame(self.root)
         self.bottom_frame.pack(pady=10)
 
@@ -262,39 +268,39 @@ class VirtualPetApp:
         self.name_entry = ctk.CTkEntry(self.top_frame)
         self.name_entry.pack(side="left", padx=5)
         # Middle Frame Widgets
-        self.start_button = ctk.CTkButton(self.middle_frame, text="", image=self.start_image, compound="top", command=self.start)  # Judit – 27.02.2024: Removed text, added image
+        self.start_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.start_image, compound="top", command=self.start)  # Judit – 27.02.2024: Removed text, added image
         self.start_button.pack(side="left", padx=5)
 
-        self.load_button = ctk.CTkButton(self.middle_frame, text="", image=self.load_image, compound="top", command=self.load_pet_prompt)  # Judit – 27.02.2024: Removed text, added image
+        self.load_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.load_image, compound="top", command=self.load_pet_prompt)  # Judit – 27.02.2024: Removed text, added image
         self.load_button.pack(side="left", padx=5)
 
-        self.save_button = ctk.CTkButton(self.middle_frame, text="", image=self.save_image, compound="top", command=self.save_pet, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.save_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.save_image, compound="top", command=self.save_pet, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.save_button.pack(side="left", padx=5)
 
-        self.feed_button = ctk.CTkButton(self.middle_frame, text="", image=self.feed_image, compound="top", command=self.feed, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.feed_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.feed_image, compound="top", command=self.feed, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.feed_button.pack(side="left", padx=5)
 
-        self.play_button = ctk.CTkButton(self.middle_frame, text="", image=self.play_image, compound="top", command= self.show_play_buttons, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.play_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.play_image, compound="top", command= self.show_play_buttons, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.play_button.pack(side="left", padx=5)
 
-        self.play_hideandseek_button = ctk.CTkButton(self.root, text="Play hide and seek", command=lambda: self.play("hide and seek"))
-        self.play_memory_button = ctk.CTkButton(self.root, text="Play memory", command=lambda: self.play("memory"))
-        self.play_beachball_button = ctk.CTkButton(self.root, text="Play beachball", command=lambda: self.play("beachball"))
-        self.stop_playing_button = ctk.CTkButton(self.root, text = "Stop Playing", command=lambda: self.remove_play_buttons())
+        self.play_hideandseek_button = ctk.CTkButton(self.middle_frame_bottom, text="Play hide and seek", command=lambda: self.play("hide and seek"))  # Judit – 27.07.2024: Moved to middle_frame_bottom
+        self.play_memory_button = ctk.CTkButton(self.middle_frame_bottom, text="Play memory", command=lambda: self.play("memory"))  # Judit – 27.07.2024: Moved to middle_frame_bottom
+        self.play_beachball_button = ctk.CTkButton(self.middle_frame_bottom, text="Play beachball", command=lambda: self.play("beachball"))  # Judit – 27.07.2024: Moved to middle_frame_bottom
+        self.stop_playing_button = ctk.CTkButton(self.middle_frame_bottom, text = "Stop Playing", command=self.remove_play_buttons)  # Judit – 27.07.2024: Moved to middle_frame_bottom
 
-        self.TV_button = ctk.CTkButton(self.middle_frame, text="", image=self.TV_image, compound="top", command=self.TV, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.TV_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.TV_image, compound="top", command=self.TV, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.TV_button.pack(side="left", padx=5)
 
-        self.sleep_button = ctk.CTkButton(self.middle_frame, text="", image=self.sleep_image, compound="top", command=self.sleep, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.sleep_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.sleep_image, compound="top", command=self.sleep, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.sleep_button.pack(side="left", padx=5)
 
-        self.vet_button = ctk.CTkButton(self.middle_frame, text="", image=self.vet_image, compound="top", command=self.vet, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.vet_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.vet_image, compound="top", command=self.vet, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.vet_button.pack(side="left", padx=5)
 
-        self.status_button = ctk.CTkButton(self.middle_frame, text="", image=self.check_status_image, compound="top", command=self.show_status, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.status_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.check_status_image, compound="top", command=self.show_status, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.status_button.pack(side="left", padx=5)
 
-        self.quit_button = ctk.CTkButton(self.middle_frame, text="", image=self.quit_image, compound="top", command=self.root.quit, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.quit_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.quit_image, compound="top", command=self.root.quit, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.quit_button.pack(side="left", padx=5)
 
         # Bottom Frame Widgets
@@ -315,10 +321,10 @@ class VirtualPetApp:
         '''
         function to display play buttons to choose from different play activities.
         '''
-        self.play_hideandseek_button.pack(pady=5)
-        self.play_memory_button.pack(pady=5)
-        self.play_beachball_button.pack(pady=5)
-        self.stop_playing_button.pack(pady=5)
+        self.play_hideandseek_button.pack(side="left", padx=5)  # Judit – 27.07.2024: Changed to pack side by side
+        self.play_memory_button.pack(side="left", padx=5)  # Judit – 27.07.2024: Changed to pack side by side
+        self.play_beachball_button.pack(side="left", padx=5)  # Judit – 27.07.2024: Changed to pack side by side
+        self.stop_playing_button.pack(side="left", padx=5)  # Judit – 27.07.2024: Changed to pack side by side
         
     def remove_play_buttons(self):
         '''
@@ -348,9 +354,9 @@ class VirtualPetApp:
         self.feed_button.configure(state=tk.NORMAL)
         self.play_button.configure(state=tk.NORMAL)
         self.TV_button.configure(state=tk.NORMAL)
-        self.play_hideandseek_button.configure(state=tk.NORMAL)
-        self.play_memory_button.configure(state=tk.NORMAL)
-        self.play_beachball_button.configure(state=tk.NORMAL)
+        self.play_hideandseek_button.configure(state=tk.NORMAL)  # Judit – 27.07.2024: Enable play buttons
+        self.play_memory_button.configure(state=tk.NORMAL)  # Judit – 27.07.2024: Enable play buttons
+        self.play_beachball_button.configure(state=tk.NORMAL)  # Judit – 27.07.2024: Enable play buttons
         self.sleep_button.configure(state=tk.NORMAL)
         self.vet_button.configure(state=tk.NORMAL)
         self.status_button.configure(state=tk.NORMAL)
@@ -419,6 +425,8 @@ class VirtualPetApp:
                     self.pet_not_found()  # Judit – 25.07.2024: Trigger the pet not found process
             else:
                 messagebox.showinfo("Info", "No saved pets available.")
+        else:
+            self.pet_not_found()  # Judit – 27.02.2024: Trigger the pet not found process if save file doesn't exist
 
     def load_pet(self, pet_name): #Logic for loading old pet.
         '''
@@ -439,9 +447,9 @@ class VirtualPetApp:
                     self.feed_button.configure(state=tk.NORMAL)
                     self.play_button.configure(state=tk.NORMAL)
                     self.TV_button.configure(state=tk.NORMAL)
-                    self.play_hideandseek_button.configure(state=tk.NORMAL)
-                    self.play_memory_button.configure(state=tk.NORMAL)
-                    self.play_beachball_button.configure(state=tk.NORMAL)
+                    self.play_hideandseek_button.configure(state=tk.NORMAL)  # Judit – 27.07.2024: Enable play buttons
+                    self.play_memory_button.configure(state=tk.NORMAL)  # Judit – 27.07.2024: Enable play buttons
+                    self.play_beachball_button.configure(state=tk.NORMAL)  # Judit – 27.07.2024: Enable play buttons
                     self.sleep_button.configure(state=tk.NORMAL)
                     self.vet_button.configure(state=tk.NORMAL)
                     self.status_button.configure(state=tk.NORMAL)
