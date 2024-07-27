@@ -163,7 +163,7 @@ class VirtualPet:
         return pet
 
 
-
+################################################################################################################
 
 class VirtualPetApp:
     '''
@@ -183,6 +183,8 @@ class VirtualPetApp:
         self.load_images()  # Judit – 25.07.2024: Load and scale images once
         self.create_widgets()
         self.load_pet_prompt() # Check for saved pet data
+        
+        
     
     def load_images(self):  # Judit – 25.07.2024: Load and scale images once
         '''
@@ -240,6 +242,7 @@ class VirtualPetApp:
 
         self.time_frame = ctk.CTkFrame(self.root)
         self.time_frame.pack(pady=10)
+
         
         # Top Frame Widgets
         self.name_label = customtkinter.CTkLabel(self.top_frame, text="Enter pet's name:")
