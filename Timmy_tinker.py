@@ -6,6 +6,7 @@ import json  # Lib for the JSON file format
 import os  # Library to help with the save utilily
 import random 
 import customtkinter as ctk
+import subprocess #starts new process to open other file
 
 SAVE_FILE = "pets_data.json"
 
@@ -41,7 +42,7 @@ class VirtualPet:
         else:
             return f"{self.name} is not hungry."
 
-    def play(self, game_type):
+    def play(self, game_type): #Janne
         '''
         play with VirtualPet. pet statistics change depending on game_type
         
@@ -59,6 +60,7 @@ class VirtualPet:
             self.hunger = min(100, self.hunger + 5)
             self.tiredness = min(100, self.tiredness + 10)
             self.intellect = min(100, self.intellect + 10)
+            self.memory_game()
         elif game_type == "beachball":
             self.happiness = min(100, self.happiness + 10)
             self.health = min(100, self.health + 5)
@@ -70,7 +72,13 @@ class VirtualPet:
         
         return f"You played {game_type} with {self.name}. {event_played}"
 
-    def random_event(self):
+#Create memory game - separate file memory_game.py / Janne
+    def memory_game(self):
+        """Starte das Memory-Spiel in einem separaten Prozess."""
+        subprocess.Popen(["python", "memory_game.py"])
+  
+
+    def random_event(self): #Janne
         '''
         when VirtualPet plays, a random event is caused, which changes both the scores and prints the event to the console
         '''
@@ -87,7 +95,7 @@ class VirtualPet:
         elif event == "nothing happened":
             return f"{self.name} is very calm today."
         
-    def TV(self):
+    def TV(self): #Janne
         '''
         when VirtualPet watches TV, a random show gets picked from the dictonary and the scores are adjusted accordingly. The show is printed in the console
         '''
