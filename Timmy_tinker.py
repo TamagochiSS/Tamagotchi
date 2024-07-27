@@ -3,7 +3,7 @@ from tkinter import messagebox, simpledialog
 from PIL import Image
 import time
 import json  # Lib for the JSON file format
-import os  # Library to help with the save utilily
+import os  # Library to help with the save utility
 import random 
 import customtkinter as ctk
 import subprocess #starts new process to open other file
@@ -204,11 +204,19 @@ class VirtualPetApp:
             self.animal_images[animal] = ctk.CTkImage(light_image=resized_image, dark_image=resized_image, size=(100, 100))  # Judit – 27.02.2024: Convert to CTkImage
         
         # Load button images
-        self.play_image = ctk.CTkImage(light_image=Image.open('buttons/play_button.png').resize((50, 50), Image.LANCZOS), dark_image=Image.open('buttons/play_button.png').resize((50, 50), Image.LANCZOS), size=(50, 50))  # Judit – 27.02.2024
-        self.feed_image = ctk.CTkImage(light_image=Image.open('buttons/feed_button.png').resize((50, 50), Image.LANCZOS), dark_image=Image.open('buttons/feed_button.png').resize((50, 50), Image.LANCZOS), size=(50, 50))  # Judit – 27.02.2024
-        self.TV_image = ctk.CTkImage(light_image=Image.open('buttons/tv_button.png').resize((50, 50), Image.LANCZOS), dark_image=Image.open('buttons/tv_button.png').resize((50, 50), Image.LANCZOS), size=(50, 50))  # Judit – 27.02.2024
-        self.sleep_image = ctk.CTkImage(light_image=Image.open('buttons/sleep_button.png').resize((50, 50), Image.LANCZOS), dark_image=Image.open('buttons/sleep_button.png').resize((50, 50), Image.LANCZOS), size=(50, 50))  # Judit – 27.02.2024
-        self.vet_image = ctk.CTkImage(light_image=Image.open('buttons/vet_button.png').resize((50, 50), Image.LANCZOS), dark_image=Image.open('buttons/vet_button.png').resize((50, 50), Image.LANCZOS), size=(50, 50))  # Judit – 27.02.2024
+        self.play_image = ctk.CTkImage(light_image=Image.open('buttons/play_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/play_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+        self.feed_image = ctk.CTkImage(light_image=Image.open('buttons/feed_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/feed_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+        self.TV_image = ctk.CTkImage(light_image=Image.open('buttons/tv_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/tv_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+        self.sleep_image = ctk.CTkImage(light_image=Image.open('buttons/sleep_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/sleep_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+        self.vet_image = ctk.CTkImage(light_image=Image.open('buttons/vet_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/vet_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+
+        # Load new button images
+        self.start_image = ctk.CTkImage(light_image=Image.open('buttons/start_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/start_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+        self.load_image = ctk.CTkImage(light_image=Image.open('buttons/load_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/load_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+        self.save_image = ctk.CTkImage(light_image=Image.open('buttons/save_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/save_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+        self.check_status_image = ctk.CTkImage(light_image=Image.open('buttons/check_status_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/check_status_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+        self.quit_image = ctk.CTkImage(light_image=Image.open('buttons/quit_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/quit_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+
 
     def start(self):
         '''
@@ -254,19 +262,19 @@ class VirtualPetApp:
         self.name_entry = ctk.CTkEntry(self.top_frame)
         self.name_entry.pack(side="left", padx=5)
         # Middle Frame Widgets
-        self.start_button = ctk.CTkButton(self.middle_frame, text="Start", command=self.start)
+        self.start_button = ctk.CTkButton(self.middle_frame, text="", image=self.start_image, compound="top", command=self.start)  # Judit – 27.02.2024: Removed text, added image
         self.start_button.pack(side="left", padx=5)
 
-        self.load_button = ctk.CTkButton(self.middle_frame, text="Load", command=self.load_pet_prompt)
+        self.load_button = ctk.CTkButton(self.middle_frame, text="", image=self.load_image, compound="top", command=self.load_pet_prompt)  # Judit – 27.02.2024: Removed text, added image
         self.load_button.pack(side="left", padx=5)
 
-        self.save_button = ctk.CTkButton(self.middle_frame, text="Save", command=self.save_pet, state="disabled")
+        self.save_button = ctk.CTkButton(self.middle_frame, text="", image=self.save_image, compound="top", command=self.save_pet, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.save_button.pack(side="left", padx=5)
 
-        self.feed_button = ctk.CTkButton(self.middle_frame, text="Feed", image=self.feed_image, compound="top", command=self.feed, state="disabled")  # Judit – 25.07.2024
+        self.feed_button = ctk.CTkButton(self.middle_frame, text="", image=self.feed_image, compound="top", command=self.feed, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.feed_button.pack(side="left", padx=5)
 
-        self.play_button = ctk.CTkButton(self.middle_frame, text="Play", image=self.play_image, compound="top", command= self.show_play_buttons, state="disabled")  # Judit – 25.07.2024
+        self.play_button = ctk.CTkButton(self.middle_frame, text="", image=self.play_image, compound="top", command= self.show_play_buttons, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.play_button.pack(side="left", padx=5)
 
         self.play_hideandseek_button = ctk.CTkButton(self.root, text="Play hide and seek", command=lambda: self.play("hide and seek"))
@@ -274,25 +282,26 @@ class VirtualPetApp:
         self.play_beachball_button = ctk.CTkButton(self.root, text="Play beachball", command=lambda: self.play("beachball"))
         self.stop_playing_button = ctk.CTkButton(self.root, text = "Stop Playing", command=lambda: self.remove_play_buttons())
 
-        self.TV_button = ctk.CTkButton(self.middle_frame, text="Watch TV", image=self.TV_image, compound="top", command=self.TV, state="disabled")  # Judit – 25.07.2024
+        self.TV_button = ctk.CTkButton(self.middle_frame, text="", image=self.TV_image, compound="top", command=self.TV, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.TV_button.pack(side="left", padx=5)
 
-        self.sleep_button = ctk.CTkButton(self.middle_frame, text="Sleep", image=self.sleep_image, compound="top", command=self.sleep, state="disabled")  # Judit – 25.07.2024
+        self.sleep_button = ctk.CTkButton(self.middle_frame, text="", image=self.sleep_image, compound="top", command=self.sleep, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.sleep_button.pack(side="left", padx=5)
 
-        self.vet_button = ctk.CTkButton(self.middle_frame, text="Visit Vet", image=self.vet_image, compound="top", command=self.vet, state="disabled")  # Judit – 25.07.2024
+        self.vet_button = ctk.CTkButton(self.middle_frame, text="", image=self.vet_image, compound="top", command=self.vet, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.vet_button.pack(side="left", padx=5)
 
-        self.status_button = ctk.CTkButton(self.middle_frame, text="Check Status", command=self.show_status, state="disabled")
+        self.status_button = ctk.CTkButton(self.middle_frame, text="", image=self.check_status_image, compound="top", command=self.show_status, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.status_button.pack(side="left", padx=5)
 
-        self.quit_button = ctk.CTkButton(self.middle_frame, text="Quit", command=self.root.quit, state="disabled")
+        self.quit_button = ctk.CTkButton(self.middle_frame, text="", image=self.quit_image, compound="top", command=self.root.quit, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.quit_button.pack(side="left", padx=5)
+
         # Bottom Frame Widgets
         self.status_text = ctk.CTkTextbox(self.bottom_frame, height=140, width=550)
         self.status_text.pack(side="left", padx=5)
 
-   # Time Frame Widgets
+        # Time Frame Widgets
         self.real_time_label = ctk.CTkLabel(self.time_frame, text="Real Time: 0s", text_color="darkgreen")
         self.real_time_label.pack(side="left", padx=10)
 
@@ -322,7 +331,6 @@ class VirtualPetApp:
 
     def start(self):
         '''
-
         '''
         name = self.name_entry.get()
         if not name:
@@ -374,7 +382,7 @@ class VirtualPetApp:
         button_frame.pack()
 
         for animal in self.animal_options:
-            self.animal_buttons[animal] = ctk.CTkButton(button_frame, image=self.animal_images[animal], command=lambda a=animal: self.select_animal(a))
+            self.animal_buttons[animal] = ctk.CTkButton(button_frame, image=self.animal_images[animal], command=lambda a=animal: self.select_animal(a), text="")  # Judit – 27.02.2024: Removed text
             self.animal_buttons[animal].pack(side=tk.LEFT, padx=10, pady=10)  # Add padding for spacing
 
     def select_animal(self, animal):
