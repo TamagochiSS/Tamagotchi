@@ -16,7 +16,7 @@ class VirtualPet:
     '''
     VirtualPet class, holding all functions to change the pets properties/statistics
     '''
-    def __init__(self, name, age=0, hunger=50, happiness=50, health=100, tiredness=50, intellect=0):
+    def __init__(self, name, age=0, hunger=50, happiness=50, health=50, tiredness=20, intellect=0):
         ''' Constructor to initialize a VirtualPet instance, used with default parameters as all pets are supposed 
         to start with the same preconditions.
         '''
@@ -51,14 +51,14 @@ class VirtualPet:
             defines which game the pet is playing 
         '''
         if game_type == "hide and seek":
-            self.happiness = min(100, self.happiness + 20)
+            self.happiness = min(100, self.happiness + 20) #score does not exceed a value of 100
             self.hunger = min(100, self.hunger + 10)
             self.tiredness = min(100, self.tiredness + 15)
         elif game_type == "memory":
             self.happiness = min(100, self.happiness + 15)
             self.hunger = min(100, self.hunger + 5)
             self.tiredness = min(100, self.tiredness + 10)
-            self.intellect = min(100, self.intellect + 5)
+            self.intellect = min(100, self.intellect + 10)
         elif game_type == "beachball":
             self.happiness = min(100, self.happiness + 10)
             self.health = min(100, self.health + 5)
@@ -70,18 +70,40 @@ class VirtualPet:
         
         return f"You played {game_type} with {self.name}. {event_played}"
 
-
-    def TV(self, show_type):
-        if show_type == "cartoon":
-            self.happiness = min(100, self.happiness + 20)
-            self.hunger = min(100, self.hunger + 10)
-            self.tiredness = min(100, self.tiredness + 15)
-            self.intellect = max(0, self.intellect - 10)
-        elif show_type == "documentary":
-            self.happiness = min(100, self.happiness + 15)
-            self.hunger = min(100, self.hunger + 5)
-            self.tiredness = min(100, self.tiredness + 10)
+    def random_event(self):
+        '''
+        when VirtualPet plays, a random event is caused, which changes both the scores and prints the event to the console
+        '''
+        events = ["saw a seldom bird", "stumbled and got hurt", "nothing happened"]
+        event = random.choice(events)
+        if event == "saw a seldom bird":
+            self.happiness = min(100, self.happiness + 10)
             self.intellect = min(100, self.intellect + 5)
+            return f"{self.name} saw a seldom bird and feels super happy!"
+        elif event == "stumbled and got hurt":
+            self.health = max(0, self.health - 10) #score does not fall below a value of 0 
+            self.intellect = max(0, self.intellect - 10)
+            return f"{self.name} lost balance and stumbled. You should get a plaster and some sweets."
+        elif event == "nothing happened":
+            return f"{self.name} is very calm today."
+        
+    def TV(self):
+        '''
+        when VirtualPet watches TV, a random show gets picked from the dictonary and the scores are adjusted accordingly. The show is printed in the console
+        '''
+        tv_show = [
+            {"title": "cartoon", "happiness": 10, "hunger": 10, "tiredness": 5, "intellect": -10, "health": -5, "message": "It is so funny and entertaining!"},
+            {"title": "documentary", "happiness": 10, "hunger": 5, "tiredness": 10, "intellect": 10, "health": -5, "message": "Exciting facts on nature are revealed!"},
+            {"title": "a home workout channel", "happiness": 10, "hunger": 5, "tiredness": 15, "intellect": 5, "health": 10, "message": "Quite hard to keep up with the pace!"}
+        ]
+
+        show = random.choice(tv_show)
+        self.happiness = min(100, self.happiness + show["happiness"])
+        self.hunger = min(100, self.hunger + show["hunger"])
+        self.tiredness = min(100, self.tiredness + show["tiredness"])
+        self.intellect = min(100, max(0, self.intellect + show["intellect"])) #making sure that the score does not exceed 100 and does not fall below 0
+        self.health = min(100, max(0, self.health + show["health"]))
+        return f"{self.name} is watching {show['title']}. {show['message']}"
 
     def vet(self):
         '''
@@ -100,23 +122,6 @@ class VirtualPet:
         self.happiness = max(0, self.happiness - 10)
         return f"{self.name} had a good sleep."
 
-    def random_event(self):
-        '''
-        when VirtualPet plays, a random event is caused, which changes both the scores and prints the event to the console
-        '''
-        events = ["saw a seldom bird", "stumbled and got hurt", "nothing happened"]
-        event = random.choice(events)
-        if event == "saw a seldom bird":
-            self.happiness = min(100, self.happiness + 10)
-            self.intellect = min(100, self.intellect + 5)
-            return f"{self.name} saw a seldom bird and feels super happy!"
-        elif event == "stumbled and got hurt":
-            self.health = max(0, self.health - 10)
-            self.intellect = max(0, self.intellect - 10)
-            return f"{self.name} lost balance and stumbled. You should get a plaster and some sweets."
-        elif event == "nothing happened":
-            return f"{self.name} is very calm today."
-        
     def show_status(self):
         '''
         retrieve the current status of your pet
@@ -523,13 +528,13 @@ class VirtualPetApp:
         self.update_status(result)
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
-    def TV(self, show_type): 
+    def TV(self): 
         '''
         Action causes by clicking TV-button. Calls ?
         '''
         if not self.pet:
             return
-        result = self.pet.play(show_type)
+        result = self.pet.TV()
         self.update_status(result)
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
