@@ -162,6 +162,9 @@ class VirtualPet:
         pet.selected_animal = data.get('selected_animal', 'cat')  # Judit – 25.07.2024: Default to 'cat' if not found
         return pet
 
+
+
+
 class VirtualPetApp:
     '''
     class VirtualPetApp is used to visualize the VirtualPet and allows the user to change the pet scores by using 
@@ -183,7 +186,7 @@ class VirtualPetApp:
     
     def load_images(self):  # Judit – 25.07.2024: Load and scale images once
         '''
-    	
+    	load and scale images once
         '''
         self.animal_options = ["cat", "chicken", "shrimp", "sheep"]
         self.animal_images = {}
@@ -219,6 +222,11 @@ class VirtualPetApp:
 
     def create_widgets(self):
         '''
+        create all buttons and widgets used on the 4 different frames. 
+        top_frame shows pet name 
+        middle_frame holds all buttons and can be changed by using the change_middle_frame_to functions
+        bottom_frame shows a console 
+        time frame shows the current time/age of pet.
         '''
         
         self.top_frame = ctk.CTkFrame(self.root)
@@ -252,13 +260,17 @@ class VirtualPetApp:
         self.feed_button = customtkinter.CTkButton(self.middle_frame, text="Feed", image=self.feed_image, compound="top", command=self.feed, state="disabled")  # Judit – 25.07.2024
         self.feed_button.pack(side="left", padx=5)
 
-        self.play_button = customtkinter.CTkButton(self.middle_frame, text="Play", image=self.play_image, compound="top", command=self.show_play_buttons, state="disabled")  # Judit – 25.07.2024
+        #self.play_button = customtkinter.CTkButton(self.middle_frame, text="Play", image=self.play_image, compound="top", command= self.change_middle_frame_to_play_buttons, state="disabled")  # Judit – 25.07.2024
+        #self.play_button.pack(side="left", padx=5)
+
+        self.play_button = customtkinter.CTkButton(self.middle_frame, text="Play", image=self.play_image, compound="top", command= self.show_play_buttons, state="disabled")  # Judit – 25.07.2024
         self.play_button.pack(side="left", padx=5)
 
         self.play_hideandseek_button = customtkinter.CTkButton(self.root, text="Play hide and seek", command=lambda: self.play("hide and seek"))
          # self.play_puzzle_button = tk.Button(self.root, text="Play Puzzle", command=lambda: [self.play("puzzle"), self.sleep_button.pack_forget()], state=tk.DISABLED)
         self.play_memory_button = customtkinter.CTkButton(self.root, text="Play memory", command=lambda: self.play("memory"))
         self.play_beachball_button = customtkinter.CTkButton(self.root, text="Play beachball", command=lambda: self.play("beachball"))
+        self.stop_playing_button = customtkinter.CTkButton(self.root, text = "Stop Playing", command=lambda: self.remove_play_buttons())
 
         self.TV_button = customtkinter.CTkButton(self.middle_frame, text="Watch TV", image=self.TV_image, compound="top", command=self.TV, state="disabled")  # Judit – 25.07.2024
         self.TV_button.pack(side="left", padx=5)
@@ -289,6 +301,13 @@ class VirtualPetApp:
         self.pet_image_label.pack()  # To display the selected pet's image after naming
         
          # self.play_hideandseek_button.pack_forget() 
+    
+   # def change_middle_frame_to_play_buttons(self): #Anna - idea to create another frame for the play buttons, which could then be fully removed or displayed(?)
+        #middle_frame 
+        #self.play_buttons_frame = ctk.CTkFrame(self.root)
+        #self.play_buttons_frame.pack(pady=10)
+        #self.play_hide_button = customtkinter.CTkButton(self.play_buttons_frame, text="hide and seek", command=self.play('hide and seek') , state = "disabled")
+        #self.play_hide_button.pack(side="left", padx=5)
 
     def show_play_buttons(self):
         '''
@@ -297,9 +316,20 @@ class VirtualPetApp:
         self.play_hideandseek_button.pack(pady=5)
         self.play_memory_button.pack(pady=5)
         self.play_beachball_button.pack(pady=5)
+        self.stop_playing_button.pack(pady=5)
         
+    def remove_play_buttons(self):
+        '''
+        function called when "stop playing" button is clicked, removes the buttons for the mini games
+        '''
+        self.play_hideandseek_button.pack_forget()
+        self.play_memory_button.pack_forget()
+        self.play_beachball_button.pack_forget()
+        self.stop_playing_button.pack_forget()
+
     def start(self):
         '''
+
         '''
         name = self.name_entry.get()
         if not name:
@@ -340,6 +370,9 @@ class VirtualPetApp:
 
     def create_animal_selection_widgets(self):
         # Judit – 25.07.2024: Animal selection
+        '''
+        choose an animal
+        '''
         self.animal_label = tk.Label(self.root, text="Wähle ein Tier:")
         self.animal_label.pack()
 
@@ -352,6 +385,9 @@ class VirtualPetApp:
             self.animal_buttons[animal].pack(side=tk.LEFT, padx=10, pady=10)  # Add padding for spacing
 
     def select_animal(self, animal):
+        '''
+        
+        '''
         self.selected_animal = animal
 
         for button in self.animal_buttons.values():
@@ -361,11 +397,15 @@ class VirtualPetApp:
         self.create_name_widgets()
 
     def create_name_widgets(self):
+        '''
+        '''
         self.name_label.pack()
         self.name_entry.pack()
         self.start_button.pack()
 
     def load_pet_prompt(self): #Definition used for loading prompt when game starts
+        '''
+        '''
         if os.path.exists(SAVE_FILE):
             with open(SAVE_FILE, "r") as file: # Read mode
                 pets_data = json.load(file)
@@ -380,6 +420,8 @@ class VirtualPetApp:
                 messagebox.showinfo("Info", "No saved pets available.")
 
     def load_pet(self, pet_name): #Logic for loading old pet.
+        '''
+        '''
         try:
             with open(SAVE_FILE, "r") as file: #reads saved file
                 pets_data = json.load(file)
@@ -415,6 +457,8 @@ class VirtualPetApp:
             messagebox.showerror("Error", f"Failed to load pet: {e}")
 
     def save_pet(self): #Definition used to save current playing pet
+        '''
+        '''
         if not self.pet:
             return
         try:
@@ -434,6 +478,8 @@ class VirtualPetApp:
             messagebox.showerror("Error", f"Failed to save pet: {e}")
 
     def update_times(self):
+        '''
+        '''
         if self.pet:
             # Real time elapsed since start
             current_time = time.time()
@@ -445,6 +491,8 @@ class VirtualPetApp:
         self.root.after(1000, self.update_times)
 
     def update_pet_time(self):
+        '''
+        '''
         if self.pet:
             # Update pet time independently
             self.pet_seconds_elapsed += 3600/24  # Increment pet time by 1 pet hour (3600 pet seconds)
@@ -460,12 +508,16 @@ class VirtualPetApp:
         self.root.after(1000, self.update_pet_time)
 
     def format_real_time(self, seconds):
+        '''
+        '''
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)
         days, hours = divmod(hours, 24)
         return f"{days}d {hours}h {minutes}m {seconds}s"
 
     def format_pet_time(self, pet_seconds):
+        '''
+        '''
         pet_hours, pet_seconds = divmod(pet_seconds, 3600)
         pet_days, pet_hours = divmod(pet_hours, 24)
         pet_minutes, pet_seconds = divmod(pet_seconds, 60)
@@ -523,7 +575,9 @@ class VirtualPetApp:
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def advance_pet_time(self, seconds):
-        
+        '''
+
+        '''
         self.pet_seconds_elapsed += seconds  # Advance pet time by given seconds
         pet_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
         old_age = self.pet.age  
@@ -533,6 +587,9 @@ class VirtualPetApp:
         self.pet_time_label.configure(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
 
     def show_status(self):
+        '''
+        calls function to update the current status and displays it to the console.
+        '''
         if not self.pet:
             return
         status = self.pet.show_status()
