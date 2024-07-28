@@ -91,7 +91,7 @@ class VirtualPet:
         elif event == "stumbled and got hurt":
             self.health = max(0, self.health - 10) #score does not fall below a value of 0 
             self.intellect = max(0, self.intellect - 10)
-            return f"{self.name} lost balance and stumbled. You should get a plaster and some sweets."
+            return f"{self.name} lost balance and fell during playing. You should get a plaster and some sweets."
         elif event == "nothing happened":
             return f"{self.name} is very calm today."
         
@@ -554,7 +554,7 @@ class VirtualPetApp:
 
     def TV(self): 
         '''
-        Action causes by clicking TV-button. Calls ?
+        Action causes by clicking TV-button. 
         '''
         if not self.pet:
             return

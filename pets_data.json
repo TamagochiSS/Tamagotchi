@@ -3,12 +3,12 @@
         "name": "Sally",
         "age": 13,
         "hunger": 40,
-        "happiness": 70,
+        "happiness": 85,
         "tiredness": 80,
         "health": 100,
-        "intellect": 0,
-        "real_time_elapsed": 1136,
-        "pet_time_elapsed": 1148400.0,
+        "intellect": 15,
+        "real_time_elapsed": 1156,
+        "pet_time_elapsed": 1166100.0,
         "selected_animal": "sheep"
     },
     "Iva": {
