@@ -29,18 +29,26 @@ class VirtualPet:
         self.tiredness = tiredness 
         self.intellect =  intellect 
 
-    def feed(self):
+    def feed(self, food_type): #Janne
         '''
-        feed VirtualPet and change hunger score
+        feed VirtualPet and change scores according to food choice
         '''
-        self.hunger = min(100, self.hunger + 5)
-        if self.hunger > 0:
-            self.hunger -= 10
-            if self.hunger < 0:
-                self.hunger = 0
-            return f"{self.name} has been fed."
-        else:
-            return f"{self.name} is not hungry."
+        if food_type == "pizza":
+            self.hunger = max(0, self.hunger - 20)
+            self.health = max(0, self.health - 10)
+            self.happiness = min(100, self.happiness + 5) 
+            self.tiredness = min(100, self.tiredness + 5)
+        elif food_type == "salad":
+            self.hunger = max(0, self.hunger - 15)
+            self.health = min(100, self.health + 5)
+            self.tiredness = max(0, self.tiredness - 5)
+        elif food_type == "barbecue":
+            self.hunger = max(0, self.hunger - 15)
+            self.happiness = min(100, self.happiness + 10)
+            self.tiredness = min(100, self.tiredness + 5)
+            
+        return f"You ate {food_type} with {self.name}."
+
 
     def play(self, game_type): #Janne
         '''
@@ -54,11 +62,11 @@ class VirtualPet:
         if game_type == "hide and seek":
             self.happiness = min(100, self.happiness + 20) #score does not exceed a value of 100
             self.hunger = min(100, self.hunger + 10)
-            self.tiredness = min(100, self.tiredness + 15)
+            self.tiredness = min(100, self.tiredness + 5)
         elif game_type == "memory":
             self.happiness = min(100, self.happiness + 15)
             self.hunger = min(100, self.hunger + 5)
-            self.tiredness = min(100, self.tiredness + 10)
+            self.tiredness = min(100, self.tiredness + 5)
             self.intellect = min(100, self.intellect + 10)
             self.memory_game()
         elif game_type == "beachball":
@@ -74,7 +82,9 @@ class VirtualPet:
 
 #Create memory game - separate file memory_game.py / Janne
     def memory_game(self):
-        """Starte das Memory-Spiel in einem separaten Prozess."""
+        '''
+        starting memory game in a separate process
+        '''
         subprocess.Popen(["python", "memory_game.py"])
   
 
@@ -101,7 +111,7 @@ class VirtualPet:
         '''
         tv_show = [
             {"title": "cartoon", "happiness": 10, "hunger": 10, "tiredness": 5, "intellect": -10, "health": -5, "message": "It is so funny and entertaining!"},
-            {"title": "documentary", "happiness": 10, "hunger": 5, "tiredness": 10, "intellect": 10, "health": -5, "message": "Exciting facts on nature are revealed!"},
+            {"title": "documentary", "happiness": 10, "hunger": 5, "tiredness": 5, "intellect": 10, "health": -5, "message": "Exciting facts on nature are revealed!"},
             {"title": "a home workout channel", "happiness": 10, "hunger": 5, "tiredness": 15, "intellect": 5, "health": 10, "message": "Quite hard to keep up with the pace!"}
         ]
 
@@ -125,7 +135,7 @@ class VirtualPet:
         '''
         send VirtualPet to sleep. Reduces happiness and tiredness, but improves health.
         '''
-        self.tiredness = max(0, self.tiredness - 20)
+        self.tiredness = max(0, self.tiredness - 40)
         self.health = min(100, self.health + 10)
         self.happiness = max(0, self.happiness - 10)
         return f"{self.name} had a good sleep."
@@ -277,8 +287,13 @@ class VirtualPetApp:
         self.save_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.save_image, compound="top", command=self.save_pet, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.save_button.pack(side="left", padx=5)
 
-        self.feed_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.feed_image, compound="top", command=self.feed, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.feed_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.feed_image, compound="top", command=self.show_feed_buttons, state="disabled")  # Janne
         self.feed_button.pack(side="left", padx=5)
+
+        self.feed_pizza_button = ctk.CTkButton(self.middle_frame_bottom, text="Eat pizza", command=lambda: self.feed("pizza"))  #Janne
+        self.feed_salad_button = ctk.CTkButton(self.middle_frame_bottom, text="Eat salad", command=lambda: self.feed("salad"))  
+        self.feed_barbecue_button = ctk.CTkButton(self.middle_frame_bottom, text="Have a barbecue", command=lambda: self.feed("barbecue"))  
+        self.stop_eating_button = ctk.CTkButton(self.middle_frame_bottom, text = "Finish eating", command=self.remove_feed_buttons)  
 
         self.play_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.play_image, compound="top", command= self.show_play_buttons, state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.play_button.pack(side="left", padx=5)
@@ -335,6 +350,24 @@ class VirtualPetApp:
         self.play_beachball_button.pack_forget()
         self.stop_playing_button.pack_forget()
 
+    def show_feed_buttons(self): #Janne
+        '''
+        function to display food choice buttons 
+        '''
+        self.feed_pizza_button.pack(side="left", padx=5)  
+        self.feed_salad_button.pack(side="left", padx=5)  
+        self.feed_barbecue_button.pack(side="left", padx=5)  
+        self.stop_eating_button.pack(side="left", padx=5)  
+        
+    def remove_feed_buttons(self): #Janne
+        '''
+        function called when "stop eating" button is clicked, removes the buttons for the food choices
+        '''
+        self.feed_pizza_button.pack_forget()
+        self.feed_salad_button.pack_forget()
+        self.feed_barbecue_button.pack_forget()
+        self.stop_eating_button.pack_forget()
+
     def start(self):
         '''
         '''
@@ -352,6 +385,9 @@ class VirtualPetApp:
         self.pet_image_label.configure(image=self.animal_images[self.selected_animal])  # Display selected pet's image
         self.save_button.configure(state=tk.NORMAL)
         self.feed_button.configure(state=tk.NORMAL)
+        self.feed_pizza_button.configure(state=tk.NORMAL)
+        self.feed_salad_button.configure(state=tk.NORMAL)
+        self.feed_barbecue_button.configure(state=tk.NORMAL)
         self.play_button.configure(state=tk.NORMAL)
         self.TV_button.configure(state=tk.NORMAL)
         self.play_hideandseek_button.configure(state=tk.NORMAL)  # Judit – 27.07.2024: Enable play buttons
@@ -446,6 +482,9 @@ class VirtualPetApp:
                     self.save_button.configure(state=tk.NORMAL)
                     self.feed_button.configure(state=tk.NORMAL)
                     self.play_button.configure(state=tk.NORMAL)
+                    self.feed_pizza_button.configure(state=tk.NORMAL)
+                    self.feed_salad_button.configure(state=tk.NORMAL)
+                    self.feed_barbecue_button.configure(state=tk.NORMAL)
                     self.TV_button.configure(state=tk.NORMAL)
                     self.play_hideandseek_button.configure(state=tk.NORMAL)  # Judit – 27.07.2024: Enable play buttons
                     self.play_memory_button.configure(state=tk.NORMAL)  # Judit – 27.07.2024: Enable play buttons
@@ -532,13 +571,13 @@ class VirtualPetApp:
         pet_minutes, pet_seconds = divmod(pet_seconds, 60)
         return f"{int(pet_days)} pet days {int(pet_hours)}h {int(pet_minutes)}m {int(pet_seconds)}s"
 
-    def feed(self):
+    def feed(self, food_type):
         '''
         action caused by clicking feed-button. Calls feed function of pet.
         '''
         if not self.pet:
             return
-        result = self.pet.feed()
+        result = self.pet.feed(food_type)
         self.update_status(result)
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
