@@ -1,6 +1,6 @@
 import pygame
 import random
-import sys
+import sys #module used to be able to exit the program after game is over 
 
 # Initialize Pygame
 pygame.init()
@@ -18,7 +18,7 @@ TEXT_COLOR = (0, 0, 0)
 
 # Canvas setup
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Hide and SeekGame")
+pygame.display.set_caption("Hide and Seek")
 
 
 font = pygame.font.Font(None, 36)

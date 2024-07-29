@@ -71,6 +71,7 @@ class VirtualPet:
             self.health = min(100, self.health + 5)
             self.hunger = min(100, self.hunger + 5)
             self.tiredness = min(100, self.tiredness + 10)
+            self.ball_game()
 
         # Call the random_event function after playing to print random event to console
         event_played = self.random_event()
@@ -90,6 +91,13 @@ class VirtualPet:
         starting hide and seek game in a separate process
         '''
         subprocess.Popen(["python", "hide_and_seek.py"])
+
+    # Create beachball game - separate file ball_game.py / Janne
+    def ball_game(self):
+        '''
+        starting hide and seek game in a separate process
+        '''
+        subprocess.Popen(["python", "ball_game.py"])
 
     def random_event(self):  # Janne
         '''

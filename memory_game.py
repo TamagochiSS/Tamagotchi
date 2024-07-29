@@ -20,7 +20,7 @@ CARD_COLORS = [
 ]
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Memory Game")
+pygame.display.set_caption("Memory")
 
 
 def create_board():
