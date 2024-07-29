@@ -655,7 +655,7 @@ class VirtualPetApp:
             return
         result = self.pet.feed(food_type)
         self.update_status(result)
-        self.show_image("feed.png")  ### Goda 28.07.2024: Display image after feeding
+        self.show_image(f"feed_{self.pet.selected_animal}.png")  ### Goda 30.07.2024: Display image after feeding based on selected pet
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def play(self, game_type):
@@ -666,7 +666,7 @@ class VirtualPetApp:
             return
         result = self.pet.play(game_type)
         self.update_status(result)
-        self.show_image("play.png")  ### Goda 28.07.2024: Display image after playing
+        self.show_image(f"play_{self.pet.selected_animal}.png")  ### Goda 30.07.2024: Display image after playing based on selected pet
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def TV(self):
@@ -677,7 +677,7 @@ class VirtualPetApp:
             return
         result = self.pet.TV()
         self.update_status(result)
-        self.show_image("tv.png")  ### Goda 28.07.2024: Display image after watching TV
+        self.show_image(f"tv_{self.pet.selected_animal}.png")  ### Goda 30.07.2024: Display image after watching TV based on selected pet
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def sleep(self):
@@ -688,7 +688,7 @@ class VirtualPetApp:
             return
         result = self.pet.sleep()
         self.update_status(result)
-        self.show_image("sleep.png")  ### Goda 28.07.2024: Display image after sleeping
+        self.show_image(f"sleep_{self.pet.selected_animal}.png")  ### Goda 30.07.2024: Display image after sleeping based on selected pet
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def vet(self):
@@ -699,7 +699,7 @@ class VirtualPetApp:
             return
         result = self.pet.vet()
         self.update_status(result)
-        self.show_image("vet.png")  ### Goda 28.07.2024: Display image after visiting the vet
+        self.show_image(f"vet_{self.pet.selected_animal}.png")  ### Goda 30.07.2024: Display image after visiting the vet based on selected pet
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def advance_pet_time(self, seconds):
@@ -732,6 +732,7 @@ class VirtualPetApp:
         panel = tk.Label(window, image=img)
         panel.image = img  # Keep a reference to avoid garbage collection
         panel.pack()
+        window.after(3000, window.destroy)  ### Goda 30.07.2024: Close the window after 5 seconds
         window.mainloop()
 
     def update_status(self, message):
