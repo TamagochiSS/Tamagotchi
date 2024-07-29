@@ -1,42 +1,44 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-from PIL import Image
+from PIL import Image, ImageTk  ### Goda 28.07.2024: Added ImageTk for displaying images
 import time
 import json  # Lib for the JSON file format
 import os  # Library to help with the save utility
-import random 
+import random
 import customtkinter as ctk
-import subprocess #starts new process to open other file
+import subprocess  # starts new process to open other file
 
 SAVE_FILE = "pets_data.json"
 
 ctk.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
 ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue")
 
+
 class VirtualPet:
     '''
     VirtualPet class, holding all functions to change the pets properties/statistics
     '''
+
     def __init__(self, name, age=0, hunger=50, happiness=50, health=50, tiredness=20, intellect=0):
-        ''' Constructor to initialize a VirtualPet instance, used with default parameters as all pets are supposed 
+        ''' Constructor to initialize a VirtualPet instance, used with default parameters as all pets are supposed
         to start with the same preconditions.
         '''
         self.name = name
         self.age = age  # In pet days
         self.hunger = hunger
         self.happiness = happiness
-        self.health =  health 
-        self.tiredness = tiredness 
-        self.intellect =  intellect 
+        self.health = health
+        self.tiredness = tiredness
+        self.intellect = intellect
 
-    def feed(self, food_type): #Janne
+    def feed(self, food_type):  # Janne
         '''
         feed VirtualPet and change scores according to food choice
         '''
         if food_type == "pizza":
             self.hunger = max(0, self.hunger - 20)
             self.health = max(0, self.health - 10)
-            self.happiness = min(100, self.happiness + 5) 
+            self.happiness = min(100, self.happiness + 5)
             self.tiredness = min(100, self.tiredness + 5)
         elif food_type == "salad":
             self.hunger = max(0, self.hunger - 15)
@@ -46,21 +48,20 @@ class VirtualPet:
             self.hunger = max(0, self.hunger - 15)
             self.happiness = min(100, self.happiness + 10)
             self.tiredness = min(100, self.tiredness + 5)
-            
+
         return f"You ate {food_type} with {self.name}."
 
-
-    def play(self, game_type): #Janne
+    def play(self, game_type):  # Janne
         '''
         play with VirtualPet. pet statistics change depending on game_type
-        
+
         Parameters
         ----------
         game_type: str
-            defines which game the pet is playing 
+            defines which game the pet is playing
         '''
         if game_type == "hide and seek":
-            self.happiness = min(100, self.happiness + 20) #score does not exceed a value of 100
+            self.happiness = min(100, self.happiness + 20)  # score does not exceed a value of 100
             self.hunger = min(100, self.hunger + 10)
             self.tiredness = min(100, self.tiredness + 5)
         elif game_type == "memory":
@@ -74,21 +75,20 @@ class VirtualPet:
             self.health = min(100, self.health + 5)
             self.hunger = min(100, self.hunger + 5)
             self.tiredness = min(100, self.tiredness + 10)
-        
+
         # Call the random_event function after playing to print random event to console
         event_played = self.random_event()
-        
+
         return f"You played {game_type} with {self.name}. {event_played}"
 
-#Create memory game - separate file memory_game.py / Janne
+    # Create memory game - separate file memory_game.py / Janne
     def memory_game(self):
         '''
         starting memory game in a separate process
         '''
         subprocess.Popen(["python", "memory_game.py"])
-  
 
-    def random_event(self): #Janne
+    def random_event(self):  # Janne
         '''
         when VirtualPet plays, a random event is caused, which changes both the scores and prints the event to the console
         '''
@@ -99,27 +99,31 @@ class VirtualPet:
             self.intellect = min(100, self.intellect + 5)
             return f"{self.name} saw a seldom bird and feels super happy!"
         elif event == "stumbled and got hurt":
-            self.health = max(0, self.health - 10) #score does not fall below a value of 0 
+            self.health = max(0, self.health - 10)  # score does not fall below a value of 0
             self.intellect = max(0, self.intellect - 10)
             return f"{self.name} lost balance and fell during playing. You should get a plaster and some sweets."
         elif event == "nothing happened":
             return f"{self.name} is very calm today."
-        
-    def TV(self): #Janne
+
+    def TV(self):  # Janne
         '''
         when VirtualPet watches TV, a random show gets picked from the dictonary and the scores are adjusted accordingly. The show is printed in the console
         '''
         tv_show = [
-            {"title": "cartoon", "happiness": 10, "hunger": 10, "tiredness": 5, "intellect": -10, "health": -5, "message": "It is so funny and entertaining!"},
-            {"title": "documentary", "happiness": 10, "hunger": 5, "tiredness": 5, "intellect": 10, "health": -5, "message": "Exciting facts on nature are revealed!"},
-            {"title": "a home workout channel", "happiness": 10, "hunger": 5, "tiredness": 15, "intellect": 5, "health": 10, "message": "Quite hard to keep up with the pace!"}
+            {"title": "cartoon", "happiness": 10, "hunger": 10, "tiredness": 5, "intellect": -10, "health": -5,
+             "message": "It is so funny and entertaining!"},
+            {"title": "documentary", "happiness": 10, "hunger": 5, "tiredness": 5, "intellect": 10, "health": -5,
+             "message": "Exciting facts on nature are revealed!"},
+            {"title": "a home workout channel", "happiness": 10, "hunger": 5, "tiredness": 15, "intellect": 5,
+             "health": 10, "message": "Quite hard to keep up with the pace!"}
         ]
 
         show = random.choice(tv_show)
         self.happiness = min(100, self.happiness + show["happiness"])
         self.hunger = min(100, self.hunger + show["hunger"])
         self.tiredness = min(100, self.tiredness + show["tiredness"])
-        self.intellect = min(100, max(0, self.intellect + show["intellect"])) #making sure that the score does not exceed 100 and does not fall below 0
+        self.intellect = min(100, max(0, self.intellect + show[
+            "intellect"]))  # making sure that the score does not exceed 100 and does not fall below 0
         self.health = min(100, max(0, self.health + show["health"]))
         return f"{self.name} is watching {show['title']}. {show['message']}"
 
@@ -163,7 +167,7 @@ class VirtualPet:
             'happiness': self.happiness,
             'tiredness': self.tiredness,
             'health': self.health,
-            'intellect': self.intellect, 
+            'intellect': self.intellect,
             'real_time_elapsed': real_time_elapsed,
             'pet_time_elapsed': pet_time_elapsed,
             'selected_animal': self.selected_animal  # Judit – 25.07.2024: Save the selected animal
@@ -171,7 +175,8 @@ class VirtualPet:
 
     @staticmethod
     def from_dict(data):
-        pet = VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'], data['tiredness'], data['health'], data['intellect'])
+        pet = VirtualPet(data['name'], data['age'], data['hunger'], data['happiness'], data['tiredness'],
+                         data['health'], data['intellect'])
         pet.selected_animal = data.get('selected_animal', 'cat')  # Judit – 25.07.2024: Default to 'cat' if not found
         return pet
 
@@ -180,9 +185,10 @@ class VirtualPet:
 
 class VirtualPetApp:
     '''
-    class VirtualPetApp is used to visualize the VirtualPet and allows the user to change the pet scores by using 
+    class VirtualPetApp is used to visualize the VirtualPet and allows the user to change the pet scores by using
     different "buttons"
     '''
+
     def __init__(self, root):
         '''
         Initialize the VirtualPetApp
@@ -195,10 +201,8 @@ class VirtualPetApp:
         self.pet_seconds_elapsed = 0  # Pet time in seconds
         self.load_images()  # Judit – 25.07.2024: Load and scale images once
         self.create_widgets()
-        self.load_pet_prompt() # Check for saved pet data
-        
-        
-    
+        self.load_pet_prompt()  # Check for saved pet data
+
     def load_images(self):  # Judit – 25.07.2024: Load and scale images once
         '''
     	load and scale images once
@@ -211,22 +215,51 @@ class VirtualPetApp:
                 continue
             image = Image.open(image_path)
             resized_image = image.resize((100, 100), Image.LANCZOS)  # Resize the image to a smaller format
-            self.animal_images[animal] = ctk.CTkImage(light_image=resized_image, dark_image=resized_image, size=(100, 100))  # Judit – 27.02.2024: Convert to CTkImage
-        
+            self.animal_images[animal] = ctk.CTkImage(light_image=resized_image, dark_image=resized_image,
+                                                      size=(100, 100))  # Judit – 27.02.2024: Convert to CTkImage
+
         # Load button images
-        self.play_image = ctk.CTkImage(light_image=Image.open('buttons/play_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/play_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
-        self.feed_image = ctk.CTkImage(light_image=Image.open('buttons/feed_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/feed_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
-        self.TV_image = ctk.CTkImage(light_image=Image.open('buttons/tv_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/tv_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
-        self.sleep_image = ctk.CTkImage(light_image=Image.open('buttons/sleep_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/sleep_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
-        self.vet_image = ctk.CTkImage(light_image=Image.open('buttons/vet_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/vet_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
+        self.play_image = ctk.CTkImage(
+            light_image=Image.open('buttons/play_button.png').resize((100, 100), Image.LANCZOS),
+            dark_image=Image.open('buttons/play_button.png').resize((100, 100), Image.LANCZOS),
+            size=(100, 100))  # Judit – 27.02.2024
+        self.feed_image = ctk.CTkImage(
+            light_image=Image.open('buttons/feed_button.png').resize((100, 100), Image.LANCZOS),
+            dark_image=Image.open('buttons/feed_button.png').resize((100, 100), Image.LANCZOS),
+            size=(100, 100))  # Judit – 27.02.2024
+        self.TV_image = ctk.CTkImage(light_image=Image.open('buttons/tv_button.png').resize((100, 100), Image.LANCZOS),
+                                     dark_image=Image.open('buttons/tv_button.png').resize((100, 100), Image.LANCZOS),
+                                     size=(100, 100))  # Judit – 27.02.2024
+        self.sleep_image = ctk.CTkImage(
+            light_image=Image.open('buttons/sleep_button.png').resize((100, 100), Image.LANCZOS),
+            dark_image=Image.open('buttons/sleep_button.png').resize((100, 100), Image.LANCZOS),
+            size=(100, 100))  # Judit – 27.02.2024
+        self.vet_image = ctk.CTkImage(
+            light_image=Image.open('buttons/vet_button.png').resize((100, 100), Image.LANCZOS),
+            dark_image=Image.open('buttons/vet_button.png').resize((100, 100), Image.LANCZOS),
+            size=(100, 100))  # Judit – 27.02.2024
 
         # Load new button images
-        self.start_image = ctk.CTkImage(light_image=Image.open('buttons/start_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/start_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
-        self.load_image = ctk.CTkImage(light_image=Image.open('buttons/load_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/load_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
-        self.save_image = ctk.CTkImage(light_image=Image.open('buttons/save_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/save_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
-        self.check_status_image = ctk.CTkImage(light_image=Image.open('buttons/check_status_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/check_status_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
-        self.quit_image = ctk.CTkImage(light_image=Image.open('buttons/quit_button.png').resize((100, 100), Image.LANCZOS), dark_image=Image.open('buttons/quit_button.png').resize((100, 100), Image.LANCZOS), size=(100, 100))  # Judit – 27.02.2024
-
+        self.start_image = ctk.CTkImage(
+            light_image=Image.open('buttons/start_button.png').resize((100, 100), Image.LANCZOS),
+            dark_image=Image.open('buttons/start_button.png').resize((100, 100), Image.LANCZOS),
+            size=(100, 100))  # Judit – 27.02.2024
+        self.load_image = ctk.CTkImage(
+            light_image=Image.open('buttons/load_button.png').resize((100, 100), Image.LANCZOS),
+            dark_image=Image.open('buttons/load_button.png').resize((100, 100), Image.LANCZOS),
+            size=(100, 100))  # Judit – 27.02.2024
+        self.save_image = ctk.CTkImage(
+            light_image=Image.open('buttons/save_button.png').resize((100, 100), Image.LANCZOS),
+            dark_image=Image.open('buttons/save_button.png').resize((100, 100), Image.LANCZOS),
+            size=(100, 100))  # Judit – 27.02.2024
+        self.check_status_image = ctk.CTkImage(
+            light_image=Image.open('buttons/check_status_button.png').resize((100, 100), Image.LANCZOS),
+            dark_image=Image.open('buttons/check_status_button.png').resize((100, 100), Image.LANCZOS),
+            size=(100, 100))  # Judit – 27.02.2024
+        self.quit_image = ctk.CTkImage(
+            light_image=Image.open('buttons/quit_button.png').resize((100, 100), Image.LANCZOS),
+            dark_image=Image.open('buttons/quit_button.png').resize((100, 100), Image.LANCZOS),
+            size=(100, 100))  # Judit – 27.02.2024
 
     def start(self):
         '''
@@ -245,13 +278,13 @@ class VirtualPetApp:
 
     def create_widgets(self):
         '''
-        create all buttons and widgets used on the 4 different frames. 
-        top_frame shows pet name 
+        create all buttons and widgets used on the 4 different frames.
+        top_frame shows pet name
         middle_frame holds all buttons and can be changed by using the change_middle_frame_to functions
-        bottom_frame shows a console 
+        bottom_frame shows a console
         time frame shows the current time/age of pet.
         '''
-        
+
         self.top_frame = ctk.CTkFrame(self.root)
         self.top_frame.pack(pady=10)
 
@@ -261,7 +294,8 @@ class VirtualPetApp:
         self.middle_frame_top = ctk.CTkFrame(self.middle_frame)  # Judit – 27.02.2024: New top frame for middle frame
         self.middle_frame_top.pack(pady=5)
 
-        self.middle_frame_bottom = ctk.CTkFrame(self.middle_frame)  # Judit – 27.02.2024: New bottom frame for middle frame
+        self.middle_frame_bottom = ctk.CTkFrame(
+            self.middle_frame)  # Judit – 27.02.2024: New bottom frame for middle frame
         self.middle_frame_bottom.pack(pady=5)
 
         self.bottom_frame = ctk.CTkFrame(self.root)
@@ -270,7 +304,6 @@ class VirtualPetApp:
         self.time_frame = ctk.CTkFrame(self.root)
         self.time_frame.pack(pady=10)
 
-        
         # Top Frame Widgets
         self.name_label = ctk.CTkLabel(self.top_frame, text="Enter pet's name:")
         self.name_label.pack(side="left", padx=5)
@@ -278,44 +311,71 @@ class VirtualPetApp:
         self.name_entry = ctk.CTkEntry(self.top_frame)
         self.name_entry.pack(side="left", padx=5)
         # Middle Frame Widgets
-        self.start_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.start_image, compound="top", command=self.start)  # Judit – 27.02.2024: Removed text, added image
+        self.start_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.start_image, compound="top",
+                                          command=self.start)  # Judit – 27.02.2024: Removed text, added image
         self.start_button.pack(side="left", padx=5)
 
-        self.load_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.load_image, compound="top", command=self.load_pet_prompt)  # Judit – 27.02.2024: Removed text, added image
+        self.load_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.load_image, compound="top",
+                                         command=self.load_pet_prompt)  # Judit – 27.02.2024: Removed text, added image
         self.load_button.pack(side="left", padx=5)
 
-        self.save_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.save_image, compound="top", command=self.save_pet, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.save_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.save_image, compound="top",
+                                         command=self.save_pet,
+                                         state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.save_button.pack(side="left", padx=5)
 
-        self.feed_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.feed_image, compound="top", command=self.show_feed_buttons, state="disabled")  # Janne
+        self.feed_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.feed_image, compound="top",
+                                         command=self.show_feed_buttons, state="disabled")  # Janne
         self.feed_button.pack(side="left", padx=5)
 
-        self.feed_pizza_button = ctk.CTkButton(self.middle_frame_bottom, text="Eat pizza", command=lambda: self.feed("pizza"))  #Janne
-        self.feed_salad_button = ctk.CTkButton(self.middle_frame_bottom, text="Eat salad", command=lambda: self.feed("salad"))  
-        self.feed_barbecue_button = ctk.CTkButton(self.middle_frame_bottom, text="Have a barbecue", command=lambda: self.feed("barbecue"))  
-        self.stop_eating_button = ctk.CTkButton(self.middle_frame_bottom, text = "Finish eating", command=self.remove_feed_buttons)  
+        self.feed_pizza_button = ctk.CTkButton(self.middle_frame_bottom, text="Eat pizza",
+                                               command=lambda: self.feed("pizza"))  # Janne
+        self.feed_salad_button = ctk.CTkButton(self.middle_frame_bottom, text="Eat salad",
+                                               command=lambda: self.feed("salad"))
+        self.feed_barbecue_button = ctk.CTkButton(self.middle_frame_bottom, text="Have a barbecue",
+                                                  command=lambda: self.feed("barbecue"))
+        self.stop_eating_button = ctk.CTkButton(self.middle_frame_bottom, text="Finish eating",
+                                                command=self.remove_feed_buttons)
 
-        self.play_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.play_image, compound="top", command= self.show_play_buttons, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.play_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.play_image, compound="top",
+                                         command=self.show_play_buttons,
+                                         state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.play_button.pack(side="left", padx=5)
 
-        self.play_hideandseek_button = ctk.CTkButton(self.middle_frame_bottom, text="Play hide and seek", command=lambda: self.play("hide and seek"))  # Judit – 27.07.2024: Moved to middle_frame_bottom
-        self.play_memory_button = ctk.CTkButton(self.middle_frame_bottom, text="Play memory", command=lambda: self.play("memory"))  # Judit – 27.07.2024: Moved to middle_frame_bottom
-        self.play_beachball_button = ctk.CTkButton(self.middle_frame_bottom, text="Play beachball", command=lambda: self.play("beachball"))  # Judit – 27.07.2024: Moved to middle_frame_bottom
-        self.stop_playing_button = ctk.CTkButton(self.middle_frame_bottom, text = "Stop Playing", command=self.remove_play_buttons)  # Judit – 27.07.2024: Moved to middle_frame_bottom
+        self.play_hideandseek_button = ctk.CTkButton(self.middle_frame_bottom, text="Play hide and seek",
+                                                     command=lambda: self.play(
+                                                         "hide and seek"))  # Judit – 27.07.2024: Moved to middle_frame_bottom
+        self.play_memory_button = ctk.CTkButton(self.middle_frame_bottom, text="Play memory", command=lambda: self.play(
+            "memory"))  # Judit – 27.07.2024: Moved to middle_frame_bottom
+        self.play_beachball_button = ctk.CTkButton(self.middle_frame_bottom, text="Play beachball",
+                                                   command=lambda: self.play(
+                                                       "beachball"))  # Judit – 27.07.2024: Moved to middle_frame_bottom
+        self.stop_playing_button = ctk.CTkButton(self.middle_frame_bottom, text="Stop Playing",
+                                                 command=self.remove_play_buttons)  # Judit – 27.07.2024: Moved to middle_frame_bottom
 
-        self.TV_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.TV_image, compound="top", command=self.TV, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.TV_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.TV_image, compound="top",
+                                       command=self.TV,
+                                       state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.TV_button.pack(side="left", padx=5)
 
-        self.sleep_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.sleep_image, compound="top", command=self.sleep, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.sleep_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.sleep_image, compound="top",
+                                          command=self.sleep,
+                                          state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.sleep_button.pack(side="left", padx=5)
 
-        self.vet_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.vet_image, compound="top", command=self.vet, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.vet_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.vet_image, compound="top",
+                                        command=self.vet,
+                                        state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.vet_button.pack(side="left", padx=5)
 
-        self.status_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.check_status_image, compound="top", command=self.show_status, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.status_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.check_status_image,
+                                           compound="top", command=self.show_status,
+                                           state="disabled")  # Judit – 27.02.2024: Removed text, added image
         self.status_button.pack(side="left", padx=5)
 
-        self.quit_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.quit_image, compound="top", command=self.root.quit, state="disabled")  # Judit – 27.02.2024: Removed text, added image
+        self.quit_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.quit_image, compound="top",
+                                         command=self.root.destroy,
+                                         state="normal")  ### Goda 28.07.2024: Changed to self.root.destroy to properly exit the application
         self.quit_button.pack(side="left", padx=5)
 
         # Bottom Frame Widgets
@@ -328,10 +388,10 @@ class VirtualPetApp:
 
         self.pet_time_label = ctk.CTkLabel(self.time_frame, text="Pet Time: 0 pet days", text_color="darkgreen")
         self.pet_time_label.pack(side="left", padx=10)
-        
+
         self.pet_image_label = ctk.CTkLabel(self.root)
         self.pet_image_label.pack()  # To display the selected pet's image after naming
-        
+
     def show_play_buttons(self):
         '''
         function to display play buttons to choose from different play activities.
@@ -340,7 +400,7 @@ class VirtualPetApp:
         self.play_memory_button.pack(side="left", padx=5)  # Judit – 27.07.2024: Changed to pack side by side
         self.play_beachball_button.pack(side="left", padx=5)  # Judit – 27.07.2024: Changed to pack side by side
         self.stop_playing_button.pack(side="left", padx=5)  # Judit – 27.07.2024: Changed to pack side by side
-        
+
     def remove_play_buttons(self):
         '''
         function called when "stop playing" button is clicked, removes the buttons for the mini games
@@ -350,16 +410,16 @@ class VirtualPetApp:
         self.play_beachball_button.pack_forget()
         self.stop_playing_button.pack_forget()
 
-    def show_feed_buttons(self): #Janne
+    def show_feed_buttons(self):  # Janne
         '''
-        function to display food choice buttons 
+        function to display food choice buttons
         '''
-        self.feed_pizza_button.pack(side="left", padx=5)  
-        self.feed_salad_button.pack(side="left", padx=5)  
-        self.feed_barbecue_button.pack(side="left", padx=5)  
-        self.stop_eating_button.pack(side="left", padx=5)  
-        
-    def remove_feed_buttons(self): #Janne
+        self.feed_pizza_button.pack(side="left", padx=5)
+        self.feed_salad_button.pack(side="left", padx=5)
+        self.feed_barbecue_button.pack(side="left", padx=5)
+        self.stop_eating_button.pack(side="left", padx=5)
+
+    def remove_feed_buttons(self):  # Janne
         '''
         function called when "stop eating" button is clicked, removes the buttons for the food choices
         '''
@@ -424,12 +484,14 @@ class VirtualPetApp:
         button_frame.pack()
 
         for animal in self.animal_options:
-            self.animal_buttons[animal] = ctk.CTkButton(button_frame, image=self.animal_images[animal], command=lambda a=animal: self.select_animal(a), text="")  # Judit – 27.02.2024: Removed text
+            self.animal_buttons[animal] = ctk.CTkButton(button_frame, image=self.animal_images[animal],
+                                                        command=lambda a=animal: self.select_animal(a),
+                                                        text="")  # Judit – 27.02.2024: Removed text
             self.animal_buttons[animal].pack(side=tk.LEFT, padx=10, pady=10)  # Add padding for spacing
 
     def select_animal(self, animal):
         '''
-        
+
         '''
         self.selected_animal = animal
 
@@ -446,15 +508,16 @@ class VirtualPetApp:
         self.name_entry.pack()
         self.start_button.pack()
 
-    def load_pet_prompt(self): #Definition used for loading prompt when game starts
+    def load_pet_prompt(self):  # Definition used for loading prompt when game starts
         '''
         '''
         if os.path.exists(SAVE_FILE):
-            with open(SAVE_FILE, "r") as file: # Read mode
+            with open(SAVE_FILE, "r") as file:  # Read mode
                 pets_data = json.load(file)
             pet_names = list(pets_data.keys())
             if pet_names:
-                pet_name = simpledialog.askstring("Load Pet", "Enter the name of the pet to load:", initialvalue=pet_names[0])
+                pet_name = simpledialog.askstring("Load Pet", "Enter the name of the pet to load:",
+                                                  initialvalue=pet_names[0])
                 if pet_name and pet_name in pet_names:
                     self.load_pet(pet_name)
                 else:
@@ -464,11 +527,11 @@ class VirtualPetApp:
         else:
             self.pet_not_found()  # Judit – 27.02.2024: Trigger the pet not found process if save file doesn't exist
 
-    def load_pet(self, pet_name): #Logic for loading old pet.
+    def load_pet(self, pet_name):  # Logic for loading old pet.
         '''
         '''
         try:
-            with open(SAVE_FILE, "r") as file: #reads saved file
+            with open(SAVE_FILE, "r") as file:  # reads saved file
                 pets_data = json.load(file)
                 if pet_name in pets_data:
                     pet_data = pets_data[pet_name]
@@ -476,9 +539,11 @@ class VirtualPetApp:
                     self.real_seconds_elapsed = pet_data['real_time_elapsed']
                     self.pet_seconds_elapsed = pet_data['pet_time_elapsed']
                     self.start_time = time.time() - self.real_seconds_elapsed
-                    self.selected_animal = pet_data.get('selected_animal', 'cat')  # Judit – 25.07.2024: Default to 'cat' if not found
-                    self.update_status(f"Welcome back {self.pet.name}!") # Welcome message
-                    self.pet_image_label.configure(image=self.animal_images[self.selected_animal])  # Display the selected pet's image
+                    self.selected_animal = pet_data.get('selected_animal',
+                                                        'cat')  # Judit – 25.07.2024: Default to 'cat' if not found
+                    self.update_status(f"Welcome back {self.pet.name}!")  # Welcome message
+                    self.pet_image_label.configure(
+                        image=self.animal_images[self.selected_animal])  # Display the selected pet's image
                     self.save_button.configure(state=tk.NORMAL)
                     self.feed_button.configure(state=tk.NORMAL)
                     self.play_button.configure(state=tk.NORMAL)
@@ -504,7 +569,7 @@ class VirtualPetApp:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load pet: {e}")
 
-    def save_pet(self): #Definition used to save current playing pet
+    def save_pet(self):  # Definition used to save current playing pet
         '''
         '''
         if not self.pet:
@@ -518,7 +583,7 @@ class VirtualPetApp:
 
             pets_data[self.pet.name] = self.pet.to_dict(self.real_seconds_elapsed, self.pet_seconds_elapsed)
 
-            with open(SAVE_FILE, "w") as file: # Sets Write mode
+            with open(SAVE_FILE, "w") as file:  # Sets Write mode
                 json.dump(pets_data, file, indent=4)
 
             self.update_status(f"{self.pet.name}'s data has been saved.")
@@ -543,7 +608,7 @@ class VirtualPetApp:
         '''
         if self.pet:
             # Update pet time independently
-            self.pet_seconds_elapsed += 3600/24  # Increment pet time by 1 pet hour (3600 pet seconds)
+            self.pet_seconds_elapsed += 3600 / 24  # Increment pet time by 1 pet hour (3600 pet seconds)
             pet_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
             old_age = self.pet.age
             self.pet.age = int(pet_days_elapsed)  # Update pet age in pet days
@@ -579,6 +644,7 @@ class VirtualPetApp:
             return
         result = self.pet.feed(food_type)
         self.update_status(result)
+        self.show_image("feed.png")  ### Goda 28.07.2024: Display image after feeding
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def play(self, game_type):
@@ -589,18 +655,19 @@ class VirtualPetApp:
             return
         result = self.pet.play(game_type)
         self.update_status(result)
+        self.show_image("play.png")  ### Goda 28.07.2024: Display image after playing
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
-    def TV(self): 
+    def TV(self):
         '''
-        Action causes by clicking TV-button. 
+        Action causes by clicking TV-button.
         '''
         if not self.pet:
             return
         result = self.pet.TV()
         self.update_status(result)
+        self.show_image("tv.png")  ### Goda 28.07.2024: Display image after watching TV
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
-
 
     def sleep(self):
         '''
@@ -610,6 +677,7 @@ class VirtualPetApp:
             return
         result = self.pet.sleep()
         self.update_status(result)
+        self.show_image("sleep.png")  ### Goda 28.07.2024: Display image after sleeping
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def vet(self):
@@ -620,6 +688,7 @@ class VirtualPetApp:
             return
         result = self.pet.vet()
         self.update_status(result)
+        self.show_image("vet.png")  ### Goda 28.07.2024: Display image after visiting the vet
         self.advance_pet_time(2 * 3600)  # Advance pet time by 2 pet hours (converted to seconds)
 
     def advance_pet_time(self, seconds):
@@ -628,7 +697,7 @@ class VirtualPetApp:
         '''
         self.pet_seconds_elapsed += seconds  # Advance pet time by given seconds
         pet_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
-        old_age = self.pet.age  
+        old_age = self.pet.age
         self.pet.age = int(pet_days_elapsed)  # Update pet age in pet days
         if self.pet.age > old_age:
             self.update_status(f"A new pet day has passed. {self.pet.name} is now {self.pet.age} pet days old.")
@@ -643,12 +712,23 @@ class VirtualPetApp:
         status = self.pet.show_status()
         self.update_status(status)
 
+    def show_image(self, image_path):  ### Goda 28.07.2024: Function to show images
+        '''
+        Display an image in a new window.
+        '''
+        window = tk.Toplevel(self.root)
+        img = ImageTk.PhotoImage(Image.open(image_path))
+        panel = tk.Label(window, image=img)
+        panel.image = img  # Keep a reference to avoid garbage collection
+        panel.pack()
+        window.mainloop()
+
     def update_status(self, message):
         self.status_text.insert(tk.END, f"{message}\n")
         self.status_text.see(tk.END)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     root = tk.Tk()
     app = VirtualPetApp(root)
     root.mainloop()
