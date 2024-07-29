@@ -54,16 +54,12 @@ class VirtualPet:
     def play(self, game_type):  # Janne
         '''
         play with VirtualPet. pet statistics change depending on game_type
-
-        Parameters
-        ----------
-        game_type: str
-            defines which game the pet is playing
         '''
         if game_type == "hide and seek":
             self.happiness = min(100, self.happiness + 20)  # score does not exceed a value of 100
             self.hunger = min(100, self.hunger + 10)
             self.tiredness = min(100, self.tiredness + 5)
+            self.hide_and_seek_game()
         elif game_type == "memory":
             self.happiness = min(100, self.happiness + 15)
             self.hunger = min(100, self.hunger + 5)
@@ -87,6 +83,13 @@ class VirtualPet:
         starting memory game in a separate process
         '''
         subprocess.Popen(["python", "memory_game.py"])
+
+    # Create hide and seek game - separate file hide_and_seek.py / Janne
+    def hide_and_seek_game(self):
+        '''
+        starting hide and seek game in a separate process
+        '''
+        subprocess.Popen(["python", "hide_and_seek.py"])
 
     def random_event(self):  # Janne
         '''
