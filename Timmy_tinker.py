@@ -213,6 +213,7 @@ class VirtualPetApp:
         self.load_images()  # Judit – 25.07.2024: Load and scale images once
         self.create_widgets()
         self.load_pet_prompt()  # Check for saved pet data
+        self.last_birthday_age = 0  # Track the last age when birthday was celebrated
 
     def load_images(self):  # Judit – 25.07.2024: Load and scale images once
         '''
@@ -271,21 +272,6 @@ class VirtualPetApp:
             light_image=Image.open('buttons/quit_button.png').resize((100, 100), Image.LANCZOS),
             dark_image=Image.open('buttons/quit_button.png').resize((100, 100), Image.LANCZOS),
             size=(100, 100))  # Judit – 27.02.2024
-
-    def start(self):
-        '''
-        '''
-        name = self.name_entry.get()
-        self.pet = VirtualPet(name)
-        # Enable the buttons when the start button is pressed
-        self.save_button.configure(state="normal")
-        self.feed_button.configure(state="normal")
-        self.play_button.configure(state="normal")
-        self.TV_button.configure(state="normal")
-        self.sleep_button.configure(state="normal")
-        self.vet_button.configure(state="normal")
-        self.status_button.configure(state="normal")
-        self.quit_button.configure(state="normal")
 
     def create_widgets(self):
         '''
@@ -441,6 +427,7 @@ class VirtualPetApp:
 
     def start(self):
         '''
+        Enable the buttons when the start button is pressed
         '''
         name = self.name_entry.get()
         if not name:
@@ -487,7 +474,7 @@ class VirtualPetApp:
         '''
         choose an animal
         '''
-        self.animal_label = ctk.CTkLabel(self.root, text="Wähle ein Tier:")
+        self.animal_label = ctk.CTkLabel(self.root, text="Wähle ein Tier:", text_color="darkgreen")
         self.animal_label.pack()
 
         self.animal_buttons = {}
@@ -519,8 +506,9 @@ class VirtualPetApp:
         self.name_entry.pack()
         self.start_button.pack()
 
-    def load_pet_prompt(self):  # Definition used for loading prompt when game starts
+    def load_pet_prompt(self):
         '''
+        used for loading prompt when game starts
         '''
         if os.path.exists(SAVE_FILE):
             with open(SAVE_FILE, "r") as file:  # Read mode
@@ -538,8 +526,9 @@ class VirtualPetApp:
         else:
             self.pet_not_found()  # Judit – 27.02.2024: Trigger the pet not found process if save file doesn't exist
 
-    def load_pet(self, pet_name):  # Logic for loading old pet.
+    def load_pet(self, pet_name): 
         '''
+        Logic for loading old pet.
         '''
         try:
             with open(SAVE_FILE, "r") as file:  # reads saved file
@@ -580,8 +569,9 @@ class VirtualPetApp:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load pet: {e}")
 
-    def save_pet(self):  # Definition used to save current playing pet
+    def save_pet(self):
         '''
+        Save current playing pet
         '''
         if not self.pet:
             return
@@ -603,6 +593,7 @@ class VirtualPetApp:
 
     def update_times(self):
         '''
+        Function that sets how the actual time passes.
         '''
         if self.pet:
             # Real time elapsed since start
@@ -616,6 +607,7 @@ class VirtualPetApp:
 
     def update_pet_time(self):
         '''
+        Function that moderates the pet time (artificial one). We can edit here to choose how the pet time passes.
         '''
         if self.pet:
             # Update pet time independently
@@ -625,7 +617,8 @@ class VirtualPetApp:
             self.pet.age = int(pet_days_elapsed)  # Update pet age in pet days
             if self.pet.age > old_age:
                 self.update_status(f"A new pet day has passed. {self.pet.name} is now {self.pet.age} pet days old.")
-
+                if self.pet.age % 10 == 0 and self.pet.age > self.last_birthday_age:
+                    self.celebrate_birthday()
             self.pet_time_label.configure(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
 
         # Schedule the update_pet_time method to run again after 1s
@@ -633,6 +626,7 @@ class VirtualPetApp:
 
     def format_real_time(self, seconds):
         '''
+        Function to set the format for the actual time passed.
         '''
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)
@@ -641,6 +635,7 @@ class VirtualPetApp:
 
     def format_pet_time(self, pet_seconds):
         '''
+        Formats the Pet time (Artificial one)
         '''
         pet_hours, pet_seconds = divmod(pet_seconds, 3600)
         pet_days, pet_hours = divmod(pet_hours, 24)
@@ -704,7 +699,7 @@ class VirtualPetApp:
 
     def advance_pet_time(self, seconds):
         '''
-
+        This snippet provides an output in the console on each new pet day.
         '''
         self.pet_seconds_elapsed += seconds  # Advance pet time by given seconds
         pet_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
@@ -713,6 +708,14 @@ class VirtualPetApp:
         if self.pet.age > old_age:
             self.update_status(f"A new pet day has passed. {self.pet.name} is now {self.pet.age} pet days old.")
         self.pet_time_label.configure(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
+        
+    def celebrate_birthday(self):
+        '''
+        Function to handle the pet's birthday.
+        '''
+        self.update_status(f"It's {self.pet.name}'s birthday!")
+        birthday_image_path = (f"path/to/birthday_image.png")  # Replace with the actual path to your birthday image
+        self.show_image(birthday_image_path)
 
     def show_status(self):
         '''
