@@ -393,6 +393,7 @@ class VirtualPetApp:
         '''
         function to display play buttons to choose from different play activities.
         '''
+        self.remove_feed_buttons() #
         self.play_hideandseek_button.pack(side="left", padx=5)  # Judit – 27.07.2024: Changed to pack side by side
         self.play_memory_button.pack(side="left", padx=5)  # Judit – 27.07.2024: Changed to pack side by side
         self.play_beachball_button.pack(side="left", padx=5)  # Judit – 27.07.2024: Changed to pack side by side
@@ -411,6 +412,7 @@ class VirtualPetApp:
         '''
         function to display food choice buttons
         '''
+        self.remove_play_buttons()
         self.feed_pizza_button.pack(side="left", padx=5)
         self.feed_salad_button.pack(side="left", padx=5)
         self.feed_barbecue_button.pack(side="left", padx=5)
@@ -714,7 +716,7 @@ class VirtualPetApp:
         Function to handle the pet's birthday.
         '''
         self.update_status(f"It's {self.pet.name}'s birthday!")
-        birthday_image_path = (f"path/to/birthday_image.png")  # Replace with the actual path to your birthday image
+        birthday_image_path = ("happy_birthday.png")  # Replace with the actual path to your birthday image
         self.show_image(birthday_image_path)
 
     def show_status(self):
