@@ -476,7 +476,7 @@ class VirtualPetApp:
         '''
         choose an animal
         '''
-        self.animal_label = ctk.CTkLabel(self.root, text="Wähle ein Tier:", text_color="darkgreen")
+        self.animal_label = ctk.CTkLabel(self.root, text="Choose an animal:", text_color="darkgreen")
         self.animal_label.pack()
 
         self.animal_buttons = {}
