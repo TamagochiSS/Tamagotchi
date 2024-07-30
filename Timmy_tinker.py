@@ -228,28 +228,28 @@ class VirtualPetApp:
             image = Image.open(image_path)
             resized_image = image.resize((100, 100), Image.LANCZOS)  # Resize the image to a smaller format
             self.animal_images[animal] = ctk.CTkImage(light_image=resized_image, dark_image=resized_image,
-                                                      size=(100, 100))  # Judit – 27.02.2024: Convert to CTkImage
+                                                      size=(100, 100))  # Judit – 27.07.2024: Convert to CTkImage
 
         # Load button images
         self.play_image = ctk.CTkImage(
             light_image=Image.open('buttons/play_button.png').resize((100, 100), Image.LANCZOS),
             dark_image=Image.open('buttons/play_button.png').resize((100, 100), Image.LANCZOS),
-            size=(100, 100))  # Judit – 27.02.2024
+            size=(100, 100))  # Judit – 27.07.2024
         self.feed_image = ctk.CTkImage(
             light_image=Image.open('buttons/feed_button.png').resize((100, 100), Image.LANCZOS),
             dark_image=Image.open('buttons/feed_button.png').resize((100, 100), Image.LANCZOS),
-            size=(100, 100))  # Judit – 27.02.2024
+            size=(100, 100))  # Judit – 27.07.2024
         self.TV_image = ctk.CTkImage(light_image=Image.open('buttons/tv_button.png').resize((100, 100), Image.LANCZOS),
                                      dark_image=Image.open('buttons/tv_button.png').resize((100, 100), Image.LANCZOS),
-                                     size=(100, 100))  # Judit – 27.02.2024
+                                     size=(100, 100))  # Judit – 27.07.2024
         self.sleep_image = ctk.CTkImage(
             light_image=Image.open('buttons/sleep_button.png').resize((100, 100), Image.LANCZOS),
             dark_image=Image.open('buttons/sleep_button.png').resize((100, 100), Image.LANCZOS),
-            size=(100, 100))  # Judit – 27.02.2024
+            size=(100, 100))  # Judit – 27.07.2024
         self.vet_image = ctk.CTkImage(
             light_image=Image.open('buttons/vet_button.png').resize((100, 100), Image.LANCZOS),
             dark_image=Image.open('buttons/vet_button.png').resize((100, 100), Image.LANCZOS),
-            size=(100, 100))  # Judit – 27.02.2024
+            size=(100, 100))  # Judit – 27.07.2024
 
         # Load new button images
         self.start_image = ctk.CTkImage(
@@ -288,11 +288,11 @@ class VirtualPetApp:
         self.middle_frame = ctk.CTkFrame(self.root)
         self.middle_frame.pack(pady=10)
 
-        self.middle_frame_top = ctk.CTkFrame(self.middle_frame)  # Judit – 27.02.2024: New top frame for middle frame
+        self.middle_frame_top = ctk.CTkFrame(self.middle_frame)  # Judit – 27.07.2024: New top frame for middle frame
         self.middle_frame_top.pack(pady=5)
 
         self.middle_frame_bottom = ctk.CTkFrame(
-            self.middle_frame)  # Judit – 27.02.2024: New bottom frame for middle frame
+            self.middle_frame)  # Judit – 27.07.2024: New bottom frame for middle frame
         self.middle_frame_bottom.pack(pady=5)
 
         self.bottom_frame = ctk.CTkFrame(self.root)
@@ -309,16 +309,16 @@ class VirtualPetApp:
         self.name_entry.pack(side="left", padx=5)
         # Middle Frame Widgets
         self.start_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.start_image, compound="top",
-                                          command=self.start)  # Judit – 27.02.2024: Removed text, added image
+                                          command=self.start)  # Judit – 27.07.2024: Removed text, added image
         self.start_button.pack(side="left", padx=5)
 
         self.load_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.load_image, compound="top",
-                                         command=self.load_pet_prompt)  # Judit – 27.02.2024: Removed text, added image
+                                         command=self.load_pet_prompt)  # Judit – 27.07.2024: Removed text, added image
         self.load_button.pack(side="left", padx=5)
 
         self.save_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.save_image, compound="top",
                                          command=self.save_pet,
-                                         state="disabled")  # Judit – 27.02.2024: Removed text, added image
+                                         state="disabled")  # Judit – 27.07.2024: Removed text, added image
         self.save_button.pack(side="left", padx=5)
 
         self.feed_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.feed_image, compound="top",
@@ -336,7 +336,7 @@ class VirtualPetApp:
 
         self.play_button = ctk.CTkButton(self.middle_frame_top, text="", image=self.play_image, compound="top",
                                          command=self.show_play_buttons,
-                                         state="disabled")  # Judit – 27.02.2024: Removed text, added image
+                                         state="disabled")  # Judit – 27.07.2024: Removed text, added image
         self.play_button.pack(side="left", padx=5)
 
         self.play_hideandseek_button = ctk.CTkButton(self.middle_frame_bottom, text="Play hide and seek",
@@ -352,22 +352,22 @@ class VirtualPetApp:
 
         self.TV_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.TV_image, compound="top",
                                        command=self.TV,
-                                       state="disabled")  # Judit – 27.02.2024: Removed text, added image
+                                       state="disabled")  # Judit – 27.07.2024: Removed text, added image
         self.TV_button.pack(side="left", padx=5)
 
         self.sleep_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.sleep_image, compound="top",
                                           command=self.sleep,
-                                          state="disabled")  # Judit – 27.02.2024: Removed text, added image
+                                          state="disabled")  # Judit – 27.07.2024: Removed text, added image
         self.sleep_button.pack(side="left", padx=5)
 
         self.vet_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.vet_image, compound="top",
                                         command=self.vet,
-                                        state="disabled")  # Judit – 27.02.2024: Removed text, added image
+                                        state="disabled")  # Judit – 27.07.2024: Removed text, added image
         self.vet_button.pack(side="left", padx=5)
 
         self.status_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.check_status_image,
                                            compound="top", command=self.show_status,
-                                           state="disabled")  # Judit – 27.02.2024: Removed text, added image
+                                           state="disabled")  # Judit – 27.07.2024: Removed text, added image
         self.status_button.pack(side="left", padx=5)
 
         self.quit_button = ctk.CTkButton(self.middle_frame_bottom, text="", image=self.quit_image, compound="top",
@@ -486,7 +486,7 @@ class VirtualPetApp:
         for animal in self.animal_options:
             self.animal_buttons[animal] = ctk.CTkButton(button_frame, image=self.animal_images[animal],
                                                         command=lambda a=animal: self.select_animal(a),
-                                                        text="")  # Judit – 27.02.2024: Removed text
+                                                        text="")  # Judit – 27.07.2024: Removed text
             self.animal_buttons[animal].pack(side=tk.LEFT, padx=10, pady=10)  # Add padding for spacing
 
     def select_animal(self, animal):
@@ -526,7 +526,7 @@ class VirtualPetApp:
             else:
                 messagebox.showinfo("Info", "No saved pets available.")
         else:
-            self.pet_not_found()  # Judit – 27.02.2024: Trigger the pet not found process if save file doesn't exist
+            self.pet_not_found()  # Judit – 27.07.2024: Trigger the pet not found process if save file doesn't exist
 
     def load_pet(self, pet_name): 
         '''
