@@ -215,7 +215,7 @@ class VirtualPetApp:
         self.load_pet_prompt()  # Check for saved pet data
         self.last_birthday_age = 0  # Track the last age when birthday was celebrated
 
-    def load_images(self):  # Judit – 25.07.2024: Load and scale images once
+    def load_images(self):  # Judit – 25.07.2024: Loads and scales the images once during initialization
         '''
     	load and scale images once
         '''
@@ -255,23 +255,23 @@ class VirtualPetApp:
         self.start_image = ctk.CTkImage(
             light_image=Image.open('buttons/start_button.png').resize((100, 100), Image.LANCZOS),
             dark_image=Image.open('buttons/start_button.png').resize((100, 100), Image.LANCZOS),
-            size=(100, 100))  # Judit – 27.02.2024
+            size=(100, 100))  # Judit – 27.07.2024
         self.load_image = ctk.CTkImage(
             light_image=Image.open('buttons/load_button.png').resize((100, 100), Image.LANCZOS),
             dark_image=Image.open('buttons/load_button.png').resize((100, 100), Image.LANCZOS),
-            size=(100, 100))  # Judit – 27.02.2024
+            size=(100, 100))  # Judit – 27.07.2024
         self.save_image = ctk.CTkImage(
             light_image=Image.open('buttons/save_button.png').resize((100, 100), Image.LANCZOS),
             dark_image=Image.open('buttons/save_button.png').resize((100, 100), Image.LANCZOS),
-            size=(100, 100))  # Judit – 27.02.2024
+            size=(100, 100))  # Judit – 27.07.2024
         self.check_status_image = ctk.CTkImage(
             light_image=Image.open('buttons/check_status_button.png').resize((100, 100), Image.LANCZOS),
             dark_image=Image.open('buttons/check_status_button.png').resize((100, 100), Image.LANCZOS),
-            size=(100, 100))  # Judit – 27.02.2024
+            size=(100, 100))  # Judit – 27.07.2024
         self.quit_image = ctk.CTkImage(
             light_image=Image.open('buttons/quit_button.png').resize((100, 100), Image.LANCZOS),
             dark_image=Image.open('buttons/quit_button.png').resize((100, 100), Image.LANCZOS),
-            size=(100, 100))  # Judit – 27.02.2024
+            size=(100, 100))  # Judit – 27.07.2024
 
     def create_widgets(self):
         '''
@@ -281,7 +281,7 @@ class VirtualPetApp:
         bottom_frame shows a console
         time frame shows the current time/age of pet.
         '''
-
+        # Judit: Added middle_frame_top and middle_frame_bottom to create two rows of buttons. 
         self.top_frame = ctk.CTkFrame(self.root)
         self.top_frame.pack(pady=10)
 
@@ -464,7 +464,7 @@ class VirtualPetApp:
         self.update_times()
         self.update_pet_time()
 
-    def pet_not_found(self):  # Judit – 25.07.2024: Handle pet not found scenario
+    def pet_not_found(self):  # Judit – 25.07.2024: Handle pet not found scenario. Adds the option to select a new pet if a pet is not found.
         '''
         handles pet not found scenario
         '''
@@ -472,7 +472,7 @@ class VirtualPetApp:
         self.create_animal_selection_widgets()
 
     def create_animal_selection_widgets(self):
-        # Judit – 25.07.2024: Animal selection
+        # Judit – 25.07.2024: Animal selection – allows user to choose a pet by clicking on the image-button with the favorite pet.
         '''
         choose an animal
         '''
