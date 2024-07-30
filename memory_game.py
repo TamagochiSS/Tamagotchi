@@ -12,6 +12,8 @@ MARGIN = 10
 FPS = 30
 WIDTH = GRID_SIZE_X * (CARD_SIZE + MARGIN) - MARGIN
 HEIGHT = GRID_SIZE_Y * (CARD_SIZE + MARGIN) - MARGIN
+BG_COLOR = (200, 200, 200)
+TEXT_COLOR = (0, 0, 0)
 
 CARD_COLORS = [
     (173, 216, 230),  # blue
@@ -21,6 +23,7 @@ CARD_COLORS = [
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Memory")
+font = pygame.font.Font(None, 36)
 
 
 def create_board():
@@ -75,8 +78,16 @@ def memory_game():
             if board[fy * GRID_SIZE_X + fx] == board[sy * GRID_SIZE_X + sx]: # cards are checked if they have the same color 
                 matches += 1 # if match than match-count increases by 1
                 if matches == total_pairs: # if all matches are found the game will be over 
-                    print("You won!")
-                    pygame.quit()
+                    
+
+                    #put's "You won!" on Screen and closes window automatically after 1500 milliseconds    
+                    screen.fill(BG_COLOR)
+                    text = font.render("You won!", True, TEXT_COLOR)
+                    screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
+                    pygame.display.flip()
+                    pygame.time.wait(1500)
+                    #other way to close the window:
+                    #pygame.quit() 
                     sys.exit()
             else:
                 revealed[fy][fx] = revealed[sy][sx] = False # if selected cards are not matching they will be flipped again 

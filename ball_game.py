@@ -12,11 +12,14 @@ PADDLE_HEIGHT = 20
 BALL_COLOR = (255, 0, 0)  # Red
 PADDLE_COLOR = (0, 255, 0)  # Green
 BG_COLOR = (0, 0, 0)  # Black
+TEXT_COLOR = (255, 255, 255)
 SPEED_X, SPEED_Y = 5, 5
 
 # Set up the screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Beachball")
+
+font = pygame.font.Font(None, 36)
 
 # Ball start position
 ball_pos = [WIDTH // 2, HEIGHT // 2]
@@ -57,12 +60,15 @@ while running:
         ball_speed[1] = -ball_speed[1]
         successful_hits += 1
         if successful_hits == max_hits:
-            print("You won!")
+            result = "You won!"
+            #print("You won!") #console check
             running = False
 
     # End the game if the ball touches the bottom of the screen
     if ball_pos[1] >= HEIGHT - BALL_SIZE:
-        print("The pet won!")
+        result = "The pet won!"
+        
+        #print("The pet won!") #console check
         running = False
 
     # Update the screen
@@ -74,5 +80,14 @@ while running:
     # Set the frame rate
     clock.tick(60)
 
-pygame.quit()
+
+
+#put's "You won!" or "The Pet won!" on Screen and closes window automatically after 1500 milliseconds    
+screen.fill(BG_COLOR)
+text = font.render(result, True, TEXT_COLOR)
+screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
+pygame.display.flip()
+pygame.time.wait(1500)
+#other way to close the window:
+#pygame.quit() 
 sys.exit()

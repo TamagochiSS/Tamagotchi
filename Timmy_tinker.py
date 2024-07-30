@@ -737,9 +737,12 @@ class VirtualPetApp:
         panel = tk.Label(window, image=img)
         panel.image = img  # Keep a reference to avoid garbage collection
         panel.pack()
+       
+       
         #window.after(8000, window.destroy)  ### Goda 30.07.2024: Close the window after 5 seconds
-        button = tk.Button(window, text = "Close", command = window.destroy) #Anna: alternatively we could close the window with a button (extra work, but maybe more control by the user?)
-        button.pack(side = "bottom")
+       
+        save_button = ctk.CTkButton(window, text="ok", command= window.destroy) # Anna: alternatively we could close the window with a button (extra work, but maybe more control by the user?)
+        save_button.pack(side = "bottom")
         
         window.mainloop()
 
