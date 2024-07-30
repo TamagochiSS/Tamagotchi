@@ -703,14 +703,22 @@ class VirtualPetApp:
 
     def advance_pet_time(self, seconds):
         '''
-        This snippet provides an output in the console on each new pet day.
+        This snippet provides an output in the console on each new pet day and checks for birthdays.
         '''
+        initial_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
         self.pet_seconds_elapsed += seconds  # Advance pet time by given seconds
-        pet_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
-        old_age = self.pet.age
-        self.pet.age = int(pet_days_elapsed)  # Update pet age in pet days
-        if self.pet.age > old_age:
-            self.update_status(f"A new pet day has passed. {self.pet.name} is now {self.pet.age} pet days old.")
+        final_days_elapsed = self.pet_seconds_elapsed / (24 * 60 * 60)
+
+        initial_age = int(initial_days_elapsed)
+        final_age = int(final_days_elapsed)
+
+        if final_age > initial_age:
+            for age in range(initial_age + 1, final_age + 1):
+                self.update_status(f"A new pet day has passed. {self.pet.name} is now {age} pet days old.")
+            if age % 10 == 0 and age > self.last_birthday_age:
+                self.celebrate_birthday()
+
+        self.pet.age = final_age  # Update pet age in pet days
         self.pet_time_label.configure(text=f"Pet Time: {self.format_pet_time(self.pet_seconds_elapsed)}")
         
     def celebrate_birthday(self):

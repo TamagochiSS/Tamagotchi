@@ -1,14 +1,14 @@
 {
     "Sally": {
         "name": "Sally",
-        "age": 64,
-        "hunger": 50,
+        "age": 69,
+        "hunger": 0,
         "happiness": 100,
         "tiredness": 100,
-        "health": 80,
+        "health": 0,
         "intellect": 15,
-        "real_time_elapsed": 31071,
-        "pet_time_elapsed": 5611950.0,
+        "real_time_elapsed": 31087,
+        "pet_time_elapsed": 6003300.0,
         "selected_animal": "sheep"
     },
     "Iva": {
