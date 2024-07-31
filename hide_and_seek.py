@@ -56,8 +56,10 @@ while running:
             if 0 <= x < GRID_SIZE and 0 <= y < GRID_SIZE:
                 if (x, y) == pet_position:
                     found = True
+                    #only for console:
                     print("You found the pet!")
                 else:
+                    #only for console:
                     print("The pet is not here.")
                 draw_grid((x, y))
 
@@ -66,6 +68,6 @@ while running:
         text = font.render("You found the pet!", True, TEXT_COLOR)
         screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
         pygame.display.flip()
-
-pygame.quit()
-sys.exit()
+        pygame.time.wait(1500)
+        pygame.quit()
+        sys.exit()
